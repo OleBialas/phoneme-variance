@@ -1,5 +1,4 @@
 % Extract envelope using Gammachirp filterbank 
-addpath('./GCFBv210pack/')
 %% Set up parameters
 wav_fs=44100; % Sampling frequency of source audio files
 down_factor=1; % envelope downsampling factor
@@ -52,11 +51,7 @@ for f = 1:2
             spectrogram(chn,:)=abs(hilbert(spectrogram(chn,:)));
         end
 
-        envelope = mean(spectrogram,1); % broadband envelope
-        envelope = filtfilthd(lpf2,envelope); % lowpass filter
-        
-        save(fullfile(wavs(i).folder, strcat(wavs(i).name(1:end-4), '_env.mat')), 'envelope', 'Fs');
-        save(fullfile(wavs(i).folder, strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
+        save(fullfile('../results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
     end
 end
 
