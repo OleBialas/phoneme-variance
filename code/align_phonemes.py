@@ -13,6 +13,7 @@ phoneme_codes = np.asarray(
 
 # for single speaker data align the phonemes across all files
 textgrids = list((root/'raw'/'stimuli'/'single_speaker').glob('*.TextGrid'))
+spectrograms = list((root/'results'/'spectrograms'/'single_speaker').glob('*_spg.mat'))
 
 pg
 
