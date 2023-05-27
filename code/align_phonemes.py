@@ -1,6 +1,7 @@
 from pathlib import Path
-import json json
+import json
 import numpy as np
+import slab
 import skfda
 from skfda.preprocessing.registration import FisherRaoElasticRegistration
 import textgrid
@@ -12,15 +13,32 @@ phoneme_codes = np.asarray(
 )
 
 # for single speaker data align the phonemes across all files
-textgrids = list((root/'raw'/'stimuli'/'single_speaker').glob('*.TextGrid'))
-spectrograms = list((root/'results'/'spectrograms'/'single_speaker').glob('*_spg.mat'))
-
-pg
-
+textgrids = list((root / "raw" / "stimuli" / "single_speaker").glob("*.TextGrid"))
+spectrograms = list(
+    (root / "results" / "spectrograms" / "single_speaker").glob("*_spg.wav")
+)
+textgrids.sort(), spectrograms.sort()
 
 # get the envelope for each phoneme utterance
+for pc in phoneme_codes:
+    phoneme_spectrograms = []
+    for t, s in zip(textgrids, spectrograms):
+        spectrogram = slab.Sound(s)
+        phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
+        for p in phoneme_grid:
+            if p.mark[:2] == pc:
+                idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
+                start = round(p.minTime * spectrogram.samplerate)
+                stop = round(p.maxTime * spectrogram.samplerate)
+                phoneme_spectrograms.append(spectrogram.data[start:stop, :])
 
-# reject outliers
+    # reject outliers
+    lengths = np.asarray([len(s) for s in phoneme_spectrograms])
+    mask = (
+        (lengths.mean() + 2 * lengths.std())
+        > lengths
+        > (lengths.mean() - 2 * lengths.std())
+    )
 
 # pad to same length so that each phoneme starts and ends with 0
 
@@ -31,5 +49,3 @@ pg
 # save aligned spectrograms and warping
 
 # for mutli speaker data align the phonemes for each file
-
-
