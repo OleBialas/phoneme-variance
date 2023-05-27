@@ -30,7 +30,7 @@ lpf2 = design(h,'cheby2','MatchExactly','stopband');
 clear Fpass Fstop Fs h;
 
 %% Envelope extraction 
-folders = char('single_speaker', 'multi_speaker');
+folders = char('multi_speakers','single_speaker');
 for f = 1:2
     wavs = dir(strcat('../raw/stimuli/', folders(f, :), '/*.wav'));
     nwavs = length(wavs);

@@ -5,14 +5,17 @@ import skfda
 from skfda.preprocessing.registration import FisherRaoElasticRegistration
 import textgrid
 
+root = Path(__file__).parent.parent.absolute()
+
 phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
 
 # for single speaker data align the phonemes across all files
-textgrids = list()
-envelopes= list()
-spectrograms = list()
+textgrids = list((root/'raw'/'stimuli'/'single_speaker').glob('*.TextGrid'))
+
+pg
+
 
 # get the envelope for each phoneme utterance
 
