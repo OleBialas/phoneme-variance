@@ -37,6 +37,9 @@ for data_set, subject_id in zip(
                 start = round(p.minTime * sound.samplerate)
                 stop = round(p.maxTime * sound.samplerate)
                 pho[-1][start:stop, idx] = 1
+    # stack spectrogram and phonemes into one vector
+    spg_pho = []
+    for s, p in zip(spg, pho):
 
     # compute spg and spg+pho trf for each subject
     subjects = list((root / "preprocessed").glob(subject_id))
@@ -52,6 +55,14 @@ for data_set, subject_id in zip(
 
             responses.append(raw.get_data().T[0 : spg[irun].shape[0], :])
 
-        trf = TRF()
-        trf.train(spg, responses, raw.info["sfreq"], tmin, tmax, regularization)
-        trf.save(root / "results" / f"{sub.name}_phoneme.trf")
+        trf_spg = TRF()
+        trf_spg.train(
+            spg, responses, raw.info["sfreq"], tmin, tmax, cfg["regularization"]
+        )
+        trf_spg.save(root / "results" / f"{sub.name}_pho.trf")
+
+        trf_spg_pho = TRF()
+        trf_spg.train(
+            spg, responses, raw.info["sfreq"], tmin, tmax, cfg["regularization"]
+        )
+        trf_spg.save(root / "results" / f"{sub.name}_pho.trf")

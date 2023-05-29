@@ -15,20 +15,6 @@ for subfolder in (root / "raw").glob("sub*"):
         out_folder.mkdir()
     for run in (subfolder / "eeg").glob("*_eeg.vhdr"):
         raw = read_raw_brainvision(run, preload=True)
-        if int(subfolder.name.split("-")[-1]) >= 100:
-            raw.drop_channels(
-                [
-                    "EXG1",
-                    "EXG2",
-                    "EXG3",
-                    "EXG4",
-                    "EXG5",
-                    "EXG6",
-                    "EXG7",
-                    "EXG8",
-                    "Status",
-                ]
-            )
         raw.set_montage(montage)
         raw.filter(1, 20)
         raw.resample(128)
