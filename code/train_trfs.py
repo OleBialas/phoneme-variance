@@ -4,33 +4,38 @@ import numpy as np
 import pandas as pd
 from mne.io import read_raw_fif
 import textgrid
+import slab
 from mtrf.model import TRF, cross_validate
 
 root = Path(__file__).parent.parent.absolute()
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
-phoneme_codes = pd.read_csv(root / "code" / "phonemes.csv")["ARPAbet"].to_list()
+phoneme_codes = np.asarray(
+    list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
+)
 
 
 for data_set, subject_id in zip(
-    ["single_speaker", "multi_speaker"], ["sub-0*", "sub-1*"]
+    ["single_speaker", "multi_speakers"], ["sub-0*", "sub-1*"]
 ):
 
     text_grids = list((root / "raw" / "stimuli" / data_set).glob("*TextGrid"))
-    spectrograms = list((root / "raw" / "stimuli" / data_set).glob("*spg.npy"))
+    spectrograms = list(
+        (root / "results" / "spectrograms" / data_set).glob("*_spg.wav")
+    )
     text_grids.sort(), spectrograms.sort()
 
     # get spectograms and phoneme stick functions
     pho, spg = [], []
     for t, s in zip(text_grids, spectrograms):
-        spg.append(np.load(s, allow_pickle=True).item()["signal"])
-        fs = np.load(s, allow_pickle=True).item()["fs"]
+        sound = slab.Sound(s)
+        spg.append(sound.data)
         phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
         pho.append(np.zeros((spg[-1].shape[0], len(phoneme_codes))))
         for p in phoneme_grid:
             if p.mark[:2] in phoneme_codes:
                 idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
-                start = round(p.minTime * fs)
-                stop = round(p.maxTime * fs)
+                start = round(p.minTime * sound.samplerate)
+                stop = round(p.maxTime * sound.samplerate)
                 pho[-1][start:stop, idx] = 1
 
     # compute spg and spg+pho trf for each subject
