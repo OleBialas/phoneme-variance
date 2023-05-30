@@ -28,18 +28,31 @@ for data_set, subject_id in zip(
     pho, spg = [], []
     for t, s in zip(text_grids, spectrograms):
         sound = slab.Sound(s)
+        fs, sound = sound.samplerate, sound.data
+        sound = (sound - sound.mean(axis=0)) / sound.std(axis=0)
         spg.append(sound.data)
         phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
         pho.append(np.zeros((spg[-1].shape[0], len(phoneme_codes))))
         for p in phoneme_grid:
             if p.mark[:2] in phoneme_codes:
                 idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
-                start = round(p.minTime * sound.samplerate)
-                stop = round(p.maxTime * sound.samplerate)
+                start = round(p.minTime * fs)
+                stop = round(p.maxTime * fs)
                 pho[-1][start:stop, idx] = 1
     # stack spectrogram and phonemes into one vector
     spg_pho = []
     for s, p in zip(spg, pho):
+        spg_pho.append(np.concatenate([s, p], axis=1))
+    # also add the onsets
+    ons = []
+    for s in spg:
+        o = np.diff(
+            s.mean(axis=1, keepdims=True), prepend=np.zeros((1, 1)), axis=0
+        ).clip(min=0)
+        o = (o - o.mean()) / o.std()
+    spg_pho_ons = []
+    for s, o in zip(spg_pho, ons):
+        spg_pho_ons.append(np.concatenate([o, s], axis=1))
 
     # compute spg and spg+pho trf for each subject
     subjects = list((root / "preprocessed").glob(subject_id))
