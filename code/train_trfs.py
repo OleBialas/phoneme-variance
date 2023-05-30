@@ -49,7 +49,7 @@ for data_set, subject_id in zip(
         o = np.diff(
             s.mean(axis=1, keepdims=True), prepend=np.zeros((1, 1)), axis=0
         ).clip(min=0)
-        o = (o - o.mean()) / o.std()
+        ons.append((o - o.mean()) / o.std())
     spg_pho_ons = []
     for s, o in zip(spg_pho, ons):
         spg_pho_ons.append(np.concatenate([o, s], axis=1))
@@ -74,6 +74,7 @@ for data_set, subject_id in zip(
             cfg["lambda"],
         )
         trf_spg.save(root / "results" / "trfs" / f"{sub.name}_spg.trf")
+        del trf_spg
 
         trf_spg_pho = TRF()
         trf_spg_pho.train(
@@ -85,6 +86,7 @@ for data_set, subject_id in zip(
             cfg["lambda"],
         )
         trf_spg_pho.save(root / "results" / "trfs" / f"{sub.name}_spg_pho.trf")
+        del trf_spg_pho
 
         trf_spg_pho_ons = TRF()
         trf_spg_pho_ons.train(
