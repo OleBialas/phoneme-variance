@@ -30,7 +30,7 @@ for data_set, subject_id in zip(
         sound = slab.Sound(s)
         fs, sound = sound.samplerate, sound.data
         sound = (sound - sound.mean(axis=0)) / sound.std(axis=0)
-        spg.append(sound.data)
+        spg.append(sound)
         phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
         pho.append(np.zeros((spg[-1].shape[0], len(phoneme_codes))))
         for p in phoneme_grid:
