@@ -66,18 +66,33 @@ for data_set, subject_id in zip(
 
         trf_spg = TRF()
         trf_spg.train(
-            spg, responses, raw.info["sfreq"], tmin, tmax, cfg["regularization"]
+            spg,
+            responses,
+            raw.info["sfreq"],
+            cfg["tmin"],
+            cfg["tmax"],
+            cfg["regularization"],
         )
         trf_spg.save(root / "results" / "trfs" / f"{sub.name}_spg.trf")
 
         trf_spg_pho = TRF()
         trf_spg_pho.train(
-            spg_pho, responses, raw.info["sfreq"], tmin, tmax, cfg["regularization"]
+            spg_pho,
+            responses,
+            raw.info["sfreq"],
+            cfg["tmin"],
+            cfg["tmax"],
+            cfg["regularization"],
         )
         trf_spg_pho.save(root / "results" / "trfs" / f"{sub.name}_spg_pho.trf")
 
         trf_spg_pho_ons = TRF()
         trf_spg_pho_ons.train(
-            spg_pho_ons, responses, raw.info["sfreq"], tmin, tmax, cfg["regularization"]
+            spg_pho_ons,
+            responses,
+            raw.info["sfreq"],
+            cfg["tmin"],
+            cfg["tmax"],
+            cfg["regularization"],
         )
         trf_spg_pho_ons.save(root / "results" / "trfs" / f"{sub.name}_spg_pho_ons.trf")
