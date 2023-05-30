@@ -71,7 +71,7 @@ for data_set, subject_id in zip(
             raw.info["sfreq"],
             cfg["tmin"],
             cfg["tmax"],
-            cfg["regularization"],
+            cfg["lambda"],
         )
         trf_spg.save(root / "results" / "trfs" / f"{sub.name}_spg.trf")
 
@@ -82,7 +82,7 @@ for data_set, subject_id in zip(
             raw.info["sfreq"],
             cfg["tmin"],
             cfg["tmax"],
-            cfg["regularization"],
+            cfg["lambda"],
         )
         trf_spg_pho.save(root / "results" / "trfs" / f"{sub.name}_spg_pho.trf")
 
@@ -93,6 +93,6 @@ for data_set, subject_id in zip(
             raw.info["sfreq"],
             cfg["tmin"],
             cfg["tmax"],
-            cfg["regularization"],
+            cfg["lambda"],
         )
         trf_spg_pho_ons.save(root / "results" / "trfs" / f"{sub.name}_spg_pho_ons.trf")
