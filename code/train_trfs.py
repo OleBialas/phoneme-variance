@@ -61,11 +61,7 @@ for data_set, subject_id in zip(
         runs = list(sub.glob("*.fif"))
         runs.sort()
         for irun, run in enumerate(runs):
-            eeg = read_raw_fif(run, verbose=False)
-            eeg = eeg.get_data().T
-
-            print(eeg.shape[0] - spg[irun].shape[0])
-
+            raw = read_raw_fif(run, verbose=False)
             responses.append(raw.get_data().T[0 : spg[irun].shape[0], :])
 
         trf_spg = TRF()
