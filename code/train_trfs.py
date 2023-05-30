@@ -56,7 +56,7 @@ for data_set, subject_id in zip(
 
     # compute spg and spg+pho trf for each subject
     subjects = list((root / "preprocessed").glob(subject_id))
-    for isub, sub in enumerate(subjects):
+    for sub in subjects:
         responses = []
         runs = list(sub.glob("*.fif"))
         runs.sort()

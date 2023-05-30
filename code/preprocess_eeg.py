@@ -14,7 +14,8 @@ for subfolder in (root / "raw").glob("sub*"):
     if not out_folder.exists():
         out_folder.mkdir()
     for run in (subfolder / "eeg").glob("*_eeg.vhdr"):
-        raw = read_raw_brainvision(run, preload=True)
+        raw = read_raw_brainvision(run, preload=True, verbose=False)
+        print(raw.tmax)
         raw.set_montage(montage)
         raw.filter(1, 20)
         raw.resample(128)
