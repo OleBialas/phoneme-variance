@@ -11,7 +11,7 @@ phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
 
-tmp_var, amp_var = [], []
+tmp_var, amp_var, count = [], []
 for pc in phoneme_codes:
     warping = np.load(
         root / "results" / "aligned" / "single_speaker" / f"{pc}_warping.npy"
@@ -19,4 +19,9 @@ for pc in phoneme_codes:
     spectrograms = np.load(
         root / "results" / "aligned" / "single_speaker" / f"{pc}_spectrograms.npy"
     )
-    tmp_var
+    tmp_var.append(np.var(warping))
+    amp_var.append(np.var(spectrograms))
+    count.append(spectrograms.shape[0])
+
+# save as csv
+data = np.stack([tmp_var, amp_var, count])
