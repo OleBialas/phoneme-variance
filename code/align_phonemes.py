@@ -70,7 +70,10 @@ for pc in phoneme_codes:
     # save aligned spectrograms and warping
     outdir = root / "results" / "aligned" / "single_speaker"
     np.save(outdir / f"{pc}_spectrograms.npy", phoneme_spectrograms_aligned)
-    np.save(outdir / f"{pc}_warping.npy", phoneme_spectrograms_aligned)
+    np.save(
+        outdir / f"{pc}_warping.npy",
+        elastic_registration.warping_.data_matrix.squeeze(),
+    )
 
 # for mutli speaker data align the phonemes for each file
 textgrids = list((root / "raw" / "stimuli" / "multi_speakers").glob("*.TextGrid"))
@@ -132,4 +135,7 @@ for t, s in zip(textgrids, spectrograms):
             if not outdir.exists():
                 outdir.mkdir()
             np.save(outdir / f"{pc}_spectrograms.npy", phoneme_spectrograms_aligned)
-            np.save(outdir / f"{pc}_warping.npy", phoneme_spectrograms_aligned)
+            np.save(
+                outdir / f"{pc}_warping.npy",
+                elastic_registration.warping_.data_matrix.squeeze(),
+            )
