@@ -5,7 +5,7 @@ import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.patches as mpatches
 
-root = Path(__file__).parent.parent.absolute()
+root = Path(__file__).parent.parent.parent.absolute()
 plt.style.use(["science", "no-latex"])
 colors = plt.rcParams["axes.prop_cycle"].by_key()["color"]
 bar_width = 0.35
@@ -39,5 +39,7 @@ ax1.tick_params(axis="x", which="both", top=False)
 ax1.tick_params(axis="x", which="minor", bottom=False)
 
 fig.savefig(
-    root / "results" / "plots" / "variance_py_phoneme.png", dpi=300, bbox_inches="tight"
+    root / "results" / "plots" / "variance_per_phoneme.png",
+    dpi=300,
+    bbox_inches="tight",
 )
