@@ -12,18 +12,6 @@ phoneme_codes = np.asarray(
 )
 
 tmp_var, amp_var, count = [], [], []
-tmp_var, amp_var, count = [], [], []
-for pc in phoneme_codes:
-    warping = np.load(
-        root / "results" / "aligned" / "single_speaker" / f"{pc}_warping.npy"
-    )
-    spectrograms = np.load(
-        root / "results" / "aligned" / "single_speaker" / f"{pc}_spectrograms.npy"
-    )
-    # compute the variance across utterances, then average across time (and bands)
-    tmp_var.append(warping.var(axis=0).mean())
-    amp_var.append(spectrograms.var(axis=1).mean())
-    count.append(spectrograms.shape[0])
 for pc in phoneme_codes:
     warping = np.load(
         root / "results" / "aligned" / "single_speaker" / f"{pc}_warping.npy"
