@@ -13,7 +13,7 @@ phoneme_codes = np.asarray(
 )
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
 
-trfs = list((root / "results" / "trfs").glob("*sub-0*_pho.trf"))
+trfs = list((root / "results" / "trfs").glob("*sub-0*_spg_pho_ons.trf"))
 trfs.sort()
 
 weight, subject_id, phoneme = [], [], []
