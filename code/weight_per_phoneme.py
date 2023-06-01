@@ -20,7 +20,7 @@ weight, subject_id, phoneme = [], [], []
 for it, t in enumerate(trfs):
     trf = TRF()
     trf.load(t)
-    phoneme_trfs = trf.to_mne_evoked(montage)[16:]
+    phoneme_trfs = trf.to_mne_evoked(montage)[16:-1]
     for ip, p in enumerate(phoneme_trfs):
         weight.append(np.abs(p.data).mean())
         subject_id.append(it)
