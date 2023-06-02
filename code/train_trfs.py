@@ -64,6 +64,18 @@ for data_set, subject_id in zip(
             raw = read_raw_fif(run, verbose=False)
             responses.append(raw.get_data().T[0 : spg[irun].shape[0], :])
 
+        trf_pho = TRF()
+        trf_pho.train(
+            pho,
+            responses,
+            raw.info["sfreq"],
+            cfg["tmin"],
+            cfg["tmax"],
+            cfg["lambda"],
+        )
+        trf_pho.save(root / "results" / "trfs" / f"{sub.name}_spg.trf")
+        del trf_pho
+
         trf_spg = TRF()
         trf_spg.train(
             spg,

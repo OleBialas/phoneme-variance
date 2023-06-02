@@ -1,5 +1,6 @@
 from pathlib import Path
 import pandas as pd
+from scipy.stats import zscore
 import statsmodels.api as sm
 
 root = Path(__file__).parent.parent.absolute()
@@ -11,12 +12,21 @@ weight = df_weight.weight.to_list()
 tmp_var = df_variance.temporal_variance.to_list() * (df_weight.subject_id.max() + 1)
 amp_var = df_variance.amplitude_variance.to_list() * (df_weight.subject_id.max() + 1)
 count = df_variance["count"].to_list() * (df_weight.subject_id.max() + 1)
+sub_id = df_weight.subject_id + 1
 
 data = np.stack([weight, tmp_var, amp_var, count]).T
 data = (data - data.mean(axis=0)) / data.std(axis=0)
+data = np.vstack([data, np.expand_dims(sub_id, axis=1)])
 
 df = pd.DataFrame(
-    data=data, columns=["weight", "temporal_variance", "amplitude_variance", "count"]
+    data=data,
+    columns=[
+        "weight",
+        "temporal_variance",
+        "amplitude_variance",
+        "count",
+        "subject_id",
+    ],
 )
 X = df[["temporal_variance", "count", "amplitude_variance"]]
 y = df["weight"]
@@ -24,3 +34,7 @@ y = df["weight"]
 X = sm.add_constant(X)
 est = sm.OLS(y, X).fit()
 est.summary()
+
+md = smf.mixedlm("weight ~ amplitude_variance", df, groups=df["subject_id"])
+mdf = md.fit()
+print(mdf.summary())
