@@ -29,7 +29,7 @@ for ip, phoneme in enumerate(phoneme_codes):
 for model in ["pho", "spg_pho", "spg_pho_ons"]:
     df = pd.DataFrame(columns=["subject", "phoneme", "weight", "svar", "tvar", "count"])
 
-    trf_files = list((root / "results" / "trfs").glob(f"*sub-0*_{model}.trf"))
+    trf_files = list((root / "results" / "trfs").glob(f"sub-0[0-9][0-9]_{model}.trf"))
     trf_files.sort()
     for tf in trf_files:
         subject = tf.name.split("_")[0]
@@ -40,7 +40,7 @@ for model in ["pho", "spg_pho", "spg_pho_ons"]:
         elif model == "spg_pho":
             weights = np.abs(trf.weights[16:, :, chs]).mean(axis=(1, 2))
         elif model == "spg_pho_ons":
-            weights = np.abs(trf.weights[16:55, :, chs]).mean(axis=(1, 2))
+            weights = np.abs(trf.weights[16:, :, chs]).mean(axis=(1, 2))
 
         data = np.zeros(
             (len(weights)),
