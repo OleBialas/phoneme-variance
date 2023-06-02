@@ -73,7 +73,7 @@ for data_set, subject_id in zip(
             cfg["tmax"],
             cfg["lambda"],
         )
-        trf_pho.save(root / "results" / "trfs" / f"{sub.name}_spg.trf")
+        trf_pho.save(root / "results" / "trfs" / f"{sub.name}_pho.trf")
         del trf_pho
 
         trf_spg = TRF()
