@@ -40,7 +40,7 @@ for model in ["pho", "spg_pho", "spg_pho_ons"]:
         elif model == "spg_pho":
             weights = np.abs(trf.weights[16:, :, chs]).mean(axis=(1, 2))
         elif model == "spg_pho_ons":
-            weights = np.abs(trf.weights[16:55, :, chs]).mean(axis=(1, 2))
+            weights = np.abs(trf.weights[17:, :, chs]).mean(axis=(1, 2))
 
         data = np.zeros(
             (len(weights)),

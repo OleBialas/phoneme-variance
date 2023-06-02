@@ -2,7 +2,7 @@ library(rethinking)
 library(cmdstanr)
 library(here)
 
-d <- read.csv(here('results', 'phoneme_weights.csv'))
+d <- read.csv(here('results', 'phoneme_weights_spg_pho_ons.csv'))
 
 dat  <- list(
 	     W = standardize(d$weight),
