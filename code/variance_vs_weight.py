@@ -5,31 +5,12 @@ import statsmodels.api as sm
 
 root = Path(__file__).parent.parent.absolute()
 
-df_weight = pd.read_csv(root / "results" / "weight_per_phoneme.csv")
-df_variance = pd.read_csv(root / "results" / "variance_per_phoneme.csv")
+df_weight = pd.read_csv(root / "results" / "phoneme_weights_pho.csv")
+# standardize
+df_weight = (df_weight - df_weight.mean()) / df_weight.std()
+X = df_weight[["svar", "count", "tvar"]]
+y = df_weight["weight"]
 
-weight = df_weight.weight.to_list()
-tmp_var = df_variance.temporal_variance.to_list() * (df_weight.subject_id.max() + 1)
-amp_var = df_variance.amplitude_variance.to_list() * (df_weight.subject_id.max() + 1)
-count = df_variance["count"].to_list() * (df_weight.subject_id.max() + 1)
-sub_id = df_weight.subject_id + 1
-
-data = np.stack([weight, tmp_var, amp_var, count]).T
-data = (data - data.mean(axis=0)) / data.std(axis=0)
-data = np.vstack([data, np.expand_dims(sub_id, axis=1)])
-
-df = pd.DataFrame(
-    data=data,
-    columns=[
-        "weight",
-        "temporal_variance",
-        "amplitude_variance",
-        "count",
-        "subject_id",
-    ],
-)
-X = df[["temporal_variance", "count", "amplitude_variance"]]
-y = df["weight"]
 
 X = sm.add_constant(X)
 est = sm.OLS(y, X).fit()

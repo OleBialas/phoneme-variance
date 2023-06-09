@@ -36,7 +36,7 @@ W_pi <- apply(W_sim, 2, PI)
 
 # plot the actually observed weights against the predicted weights
 # useful for determining how good the model is
-plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight', xlim=c(-1.5,4.5), ylim=c(-1.0, 1.0))
+plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight', xlim=c(-1.5,4.5), ylim=c(-1.2, 1.2))
 abline(a=0, b=1)
 
 
