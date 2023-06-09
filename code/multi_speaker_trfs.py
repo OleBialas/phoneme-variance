@@ -82,32 +82,31 @@ for sub in subjects:
             bands=bands,
         )
         best_reg = trf.regularization
-    np.save(
-        root / "results" / "trfs" / f"{sub.name}_{feat_names}_regularization.npy",
-        best_reg,
-    )
-
-    # test the model on each segment, train it on the other ones using
-    # the best values for regularization
-    for iseg, (feat_test, resp_test) in enumerate(zip(features, responses)):
-        feat_train = features[:iseg] + features[iseg + 1 :]
-        resp_train = responses[:iseg] + responses[iseg + 1 :]
-        trf = TRF()
-        trf._train(
-            feat_train,
-            resp_train,
-            raw.info["sfreq"],
-            cfg["tmin"],
-            cfg["tmax"],
+        np.save(
+            root / "results" / "trfs" / f"{sub.name}_{feat_names}_regularization.npy",
             best_reg,
         )
-        _, r, _ = trf.predict(feat_test, resp_test, average=False)
-        r_coefs[iseg, ifeat] = r[cfg["channels"]].mean()
-        trf.save(
-            root
-            / "results"
-            / "trfs"
-            / f"{sub.name}_{feat_names}_{str(iseg+1).zfill(2)}.trf"
-        )
 
+        # test the model on each segment, train it on the other ones using
+        # the best values for regularization
+        for iseg, (feat_test, resp_test) in enumerate(zip(features, responses)):
+            feat_train = features[:iseg] + features[iseg + 1 :]
+            resp_train = responses[:iseg] + responses[iseg + 1 :]
+            trf = TRF()
+            trf._train(
+                feat_train,
+                resp_train,
+                raw.info["sfreq"],
+                cfg["tmin"],
+                cfg["tmax"],
+                best_reg,
+            )
+            _, r, _ = trf.predict(feat_test, resp_test, average=False)
+            r_coefs[iseg, ifeat] = r[cfg["channels"]].mean()
+            trf.save(
+                root
+                / "results"
+                / "trfs"
+                / f"{sub.name}_{feat_names}_{str(iseg+1).zfill(2)}.trf"
+            )
     np.save(root / "results" / "trfs" / f"{sub.name}_correlations.npy", r_coefs)
