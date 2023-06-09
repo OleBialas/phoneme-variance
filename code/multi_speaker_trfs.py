@@ -67,7 +67,7 @@ for sub in subjects:
         responses.append(raw.get_data().T[0 : spg[irun].shape[0], :])
 
     r_coefs = np.zeros((len(runs), 2))
-    for ifeat, features, bands, feat_names in enumerate(
+    for ifeat, (features, bands, feat_names) in enumerate(
         zip([spg_ons, spg_ons_pho], [(16, 1), (16, 1, 39)], ["spg_ons", "spg_ons_pho"])
     ):
         # find best lambda
