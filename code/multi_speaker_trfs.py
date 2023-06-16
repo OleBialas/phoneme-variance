@@ -24,7 +24,7 @@ spectrograms = list(
 )
 text_grids.sort(), spectrograms.sort()
 
-regularization = np.logspace(-1, 5, 5)
+regularization = np.logspace(-1, 5, 10)
 
 # get spectograms and phoneme stick functions
 pho, spg = [], []
@@ -71,7 +71,7 @@ for sub in subjects:
         zip([spg_ons, spg_ons_pho], [(16, 1), (16, 1, 39)], ["spg_ons", "spg_ons_pho"])
     ):
         # find best lambda
-        trf = TRF(method="banded")
+        trf = TRF()
         trf.train(
             features,
             responses,
