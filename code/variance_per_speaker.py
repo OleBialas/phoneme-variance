@@ -12,7 +12,9 @@ phoneme_codes = np.asarray(
 )
 audios = list((root / "results" / "aligned" / "multi_speakers").glob("audio*"))
 audios.sort()
+min_n = 10  # minimum number of utterances neccessary for a phoneme to be considered
 
+n_phonemes = []
 amp_var_speaker, tmp_var_speaker, n_phonemes_speaker = [], [], []
 for a in audios:
     amp_var, tmp_var = [], []
@@ -20,8 +22,9 @@ for a in audios:
         if (a / f"{pc}_warping.npy").exists():
             warping = np.load(a / f"{pc}_warping.npy")
             spectrograms = np.load(a / f"{pc}_spectrograms.npy")
-            tmp_var.append(warping.var(axis=0).mean())
-            amp_var.append(spectrograms.var(axis=1).mean())
+            if spectrograms.shape[0] >= min_n:
+                tmp_var.append(warping.var(axis=0).mean())
+                amp_var.append(spectrograms.var(axis=1).mean())
     amp_var_speaker.append(np.mean(amp_var))
     tmp_var_speaker.append(np.mean(tmp_var))
     n_phonemes_speaker.append(len(amp_var))
