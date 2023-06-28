@@ -15,7 +15,7 @@ clear Fpass Fstop Fs h;
 
 % GammaChirp filterbank
 GCparam.fs = wav_fs/down_factor; 
-GCparam.NumCh = 16;
+GCparam.NumCh = 8;
 GCparam.FRange = [80,8e3];
 GCparam.OutMidCrct = 'ELC';
 % GCparam.OutMidCrct = 'No';

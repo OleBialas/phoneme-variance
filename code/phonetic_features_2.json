@@ -1,0 +1,21 @@
+{
+    "Stop": ["B", "D", "K", "P", "T", "G"],
+    "Fricative": ["F", "HH", "S", "V", "Z", "DH", "SH", "TH"],
+    "Affricate": ["JH", "CH"],
+    "Nasal": ["M", "N", "NG"],
+    "Liquid": ["L", "R"],
+    "Glide": ["Y", "W"],
+    "Voiced": ["B", "D", "Y", "L", "M", "N", "R", "V", "W", "Z", "DH", "NG", "G", "JH"],
+    "Voiceless": ["F", "HH", "K", "P", "S", "T", "SH", "CH", "TH"],
+    "Front": ["IY", "AE", "EH", "IH"],
+    "Central": ["ER", "AH"],
+    "Back": ["OW", "UW", "AA", "UH"],
+    "Diphtong": ["EY", "AY", "OY", "AW"],
+    "Bilabial": ["B", "M", "P", "W"],
+    "Labio-dental": ["F", "V"],
+    "Lingua-dental": ["DH", "TH"],
+    "Lingua-alveolar": ["D", "L", "N", "S", "T", "Z", "AH", "JH"],
+    "Lingua-palatal": ["Y", "R", "SH"],
+    "Lingua-velar": ["K", "NG", "G"],
+    "Glottal": ["HH"]
+}
