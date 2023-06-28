@@ -14,7 +14,7 @@ from mtrf.model import TRF, cross_validate
 
 root = Path(__file__).parent.parent.absolute()
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
-phoneme_codes = np.asarray(
+phonetic_features = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
 
