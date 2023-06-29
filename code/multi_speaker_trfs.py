@@ -14,13 +14,13 @@ from mtrf.model import TRF, cross_validate
 
 root = Path(__file__).parent.parent.absolute()
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
-phonetic_features = np.asarray(
+phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
 
-text_grids = list((root / "raw" / "stimuli" / "multi_speakers").glob("*TextGrid"))
+text_grids = list((root / "raw" / "stimuli" / "multi_speaker").glob("*TextGrid"))
 spectrograms = list(
-    (root / "results" / "spectrograms" / "multi_speakers").glob("*_spg.wav")
+    (root / "results" / "spectrograms" / "multi_speaker").glob("*_spg.wav")
 )
 text_grids.sort(), spectrograms.sort()
 
@@ -41,6 +41,8 @@ for t, s in zip(text_grids, spectrograms):
             start = round(p.minTime * fs)
             stop = round(p.maxTime * fs)
             pho[-1][start:stop, idx] = 1
+
+
 # compute acoustic onsets by half-wave rectification of the envelope
 ons = []
 for s in spg:
