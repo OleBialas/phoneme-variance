@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from pathlib import Path
+import numpy as np
 from mne.io import read_raw_brainvision
 from pyprep.ransac import find_bad_by_ransac
 from mne_bids import BIDSPath, mark_channels
