@@ -3,11 +3,13 @@
 from pathlib import Path
 import numpy as np
 from mne.io import read_raw_brainvision
+from mne.channels import make_standard_montage
 from pyprep.ransac import find_bad_by_ransac
 from mne_bids import BIDSPath, mark_channels
 
 root = Path(__file__).parent.parent.absolute()
-
+montage = make_standard_montage("biosemi128")
+positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 subfolders = list((root / "raw").glob("sub*"))
 subfolders.sort()
 for subfolder in subfolders:
