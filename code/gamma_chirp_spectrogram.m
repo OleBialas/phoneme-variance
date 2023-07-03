@@ -32,11 +32,11 @@ for f = 1:2
         assert(Fs==wav_fs);
         y=(y(:,1)); % only keep 1st channel
         y = filtfilthd(d,y); % Filter below Nyquist frequency
-        y= nt_dsample(y,Fs/GCparam.fs); % Downsample
+        y= nt_dsample(y,Fs/GCparam.fs);
         Fs = GCparam.fs;
         spectrogram = GCFBv210(y',GCparam); % Bandpass filter
         spectrogram = spectrogram';
-        spectrogram = resample(spectrogram, out_fs, Fs);  % downsample
+        spectrogram = resample(spectrogram, out_fs, Fs);
         Fs=out_fs;
 
         for chn=1:size(spectrogram,1) % envelope of each spectrogram band

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from pathlib import Path
 import numpy as np
 from mne.io import read_raw_brainvision
@@ -18,8 +16,8 @@ for subfolder in subfolders:
     for irun, run in enumerate(runs):
         bids_path = BIDSPath(subject=subfolder.name.split('-')[1], run=irun+1, root=subfolder.parent)
         raw = read_raw_brainvision(run, preload=True, verbose=False)
-        raw = raw.filter(1, 20, n_jobs=4)
-        raw = raw.resample(64, n_jobs=4)
+        raw = raw.filter(1, 20, n_jobs=4, verbose=False)
+        raw = raw.resample(64, n_jobs=4, verbose=False)
         bads, _ = find_bad_by_ransac(
             raw.get_data(),
             raw.info["sfreq"],
@@ -27,4 +25,5 @@ for subfolder in subfolders:
             positions,
             exclude=[],
         )
+        print(len(bads))
         mark_channels(bids_path, ch_names=bads, status='bad')
