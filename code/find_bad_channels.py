@@ -10,6 +10,7 @@ montage = make_standard_montage("biosemi128")
 positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 subfolders = list((root / "raw").glob("sub*"))
 subfolders.sort()
+n_bads = []
 for subfolder in subfolders:
     runs = list((subfolder / "eeg").glob("*_eeg.vhdr"))
     runs.sort()
@@ -25,5 +26,7 @@ for subfolder in subfolders:
             positions,
             exclude=[],
         )
-        print(len(bads))
-        mark_channels(bids_path, ch_names=bads, status='bad')
+        n_bads.append(len(bads))
+        if len(bads)>0:
+            mark_channels(bids_path, ch_names=bads, status='bad')
+print(n_bads)
