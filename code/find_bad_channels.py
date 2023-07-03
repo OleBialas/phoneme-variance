@@ -18,7 +18,8 @@ for subfolder in subfolders:
     for irun, run in enumerate(runs):
         bids_path = BIDSPath(subject=subfolder.name.split('-')[1], run=irun+1, root=subfolder.parent)
         raw = read_raw_brainvision(run, preload=True, verbose=False)
-        raw.filter(1, 20)
+        raw = raw.filter(1, 20, n_jobs=4)
+        raw = raw.resample(64, n_jobs=4)
         bads, _ = find_bad_by_ransac(
             raw.get_data(),
             raw.info["sfreq"],
