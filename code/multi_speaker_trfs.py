@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from mne.io import read_raw_fif
 import textgrid
-import slab
+import librosa
 from mtrf.model import TRF, cross_validate
 
 root = Path(__file__).parent.parent.absolute()
@@ -17,19 +17,18 @@ cfg = json.load(open(root / "code" / "trf_parameters.json"))
 phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
-
-text_grids = list((root / "raw" / "stimuli" / "multi_speaker").glob("*TextGrid"))
-spectrograms = list(
-    (root / "results" / "spectrograms" / "multi_speaker").glob("*_spg.wav")
-)
-text_grids.sort(), spectrograms.sort()
-
 regularization = np.logspace(-1, 5, 10)
+
+text_grids = list((root / "raw" / "stimuli" / "multi_speaker").glob("*.TextGrid"))
+wavs = list((root / "raw" / "stimuli" / "multi_speaker").glob("*.wav"))
+text_grids.sort(), wavs.sort()
 
 # get spectograms and phoneme stick functions
 pho, spg = [], []
-for t, s in zip(text_grids, spectrograms):
-    sound = slab.Sound(s)
+for t, w in zip(text_grids, wavs):
+    sound, fs = librosa.load(w)
+    mel = librosa.feature.melspectrogram(y=sound, n_mels=8)
+    mel = librosa.resample(y=mel, orig_sr=fs, target_sr=128)
     fs, sound = sound.samplerate, sound.data
     sound = (sound - sound.mean(axis=0)) / sound.std(axis=0)
     spg.append(sound)

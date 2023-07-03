@@ -1,52 +1,43 @@
 % Extract envelope using Gammachirp filterbank 
 %% Set up parameters
 wav_fs=44100; % Sampling frequency of source audio files
-down_factor=10; % envelope downsampling factor
+out_fs=128; % Downsample spectrogram to this frequqency
+down_factor=3; % envelope downsampling factor
 
-% Parameters for lowpass filter
+% Design lowpass filter
 Fpass = 9e3;
 Fstop = 11e3;
 Fs=wav_fs;
 Apass = 1;
 Astop = 60;
-h = fdesign.lowpass(Fpass,Fstop,Apass,Astop,Fs);
-lpf1 = design(h,'cheby2','MatchExactly','stopband');
-clear Fpass Fstop Fs h;
+d = designfilt('lowpassiir', 'PassbandFrequency', Fpass, 'StopbandFrequency', Fstop,...
+    'StopbandAttenuation', 65, 'SampleRate', wav_fs, 'DesignMethod', 'cheby2');
 
-% GammaChirp filterbank
-GCparam.fs = wav_fs/down_factor; 
-GCparam.NumCh = 8;
+% GammacHirp filterbank
+GCparam.fs = wav_fs/down_factor;
 GCparam.FRange = [80,8e3];
 GCparam.OutMidCrct = 'ELC';
-% GCparam.OutMidCrct = 'No';
-% GCparam.Ctrl = 'dyn';
-
-% Envelope filter
-Fpass = 30;
-Fstop = 32;
+GCparam.NumCh = 8
 Fs = GCparam.fs;
-h = fdesign.lowpass(Fpass,Fstop,Apass,Astop,Fs);
-lpf2 = design(h,'cheby2','MatchExactly','stopband');
-clear Fpass Fstop Fs h;
 
 %% Envelope extraction 
-folders = char('multi_speakers','single_speaker');
+folders = char('multi_speakers',' single_speaker');
 for f = 1:2
     wavs = dir(strcat('../raw/stimuli/', folders(f, :), '/*.wav'));
     nwavs = length(wavs);
     envelopes={};
     for i = 1:nwavs
-
-        % Read in audio
         f_name = fullfile(wavs(i).folder, wavs(i).name)
         [y,Fs] = audioread(f_name);
         assert(Fs==wav_fs);
         y=(y(:,1)); % only keep 1st channel
-        y = filtfilthd(lpf1,y); % Filter below Nyquist frequency
+        y = filtfilthd(d,y); % Filter below Nyquist frequency
         y= nt_dsample(y,Fs/GCparam.fs); % Downsample
-        Fs = GCparam.fs
-        y=y';
-        spectrogram = GCFBv210(y,GCparam); % Bandpass filter
+        Fs = GCparam.fs;
+        spectrogram = GCFBv210(y',GCparam); % Bandpass filter
+        spectrogram = spectrogram';
+        spectrogram = resample(spectrogram, out_fs, Fs);  % downsample
+        Fs=out_fs;
 
         for chn=1:size(spectrogram,1) % envelope of each spectrogram band
             spectrogram(chn,:)=abs(hilbert(spectrogram(chn,:)));
