@@ -26,12 +26,23 @@ for subfolder in subfolders:
             / f"{subfolder.name}_task-listening_run-{str(irun).zfill(2)}_channels.tsv",
             sep="\t",
         )
-        channels.status = "good"
+        # channels.status = "good"
+        channels.status_description = "n/a"
         channels.to_csv(
             subfolder
             / "eeg"
             / f"{subfolder.name}_task-listening_run-{str(irun).zfill(2)}_channels.tsv",
+            columns=[
+                "name",
+                "type",
+                "units",
+                "description",
+                "sampling_frequency",
+                "status",
+                "status_description",
+            ],
             sep="\t",
+            index=False,
         )
         raw = read_raw_brainvision(
             subfolder
