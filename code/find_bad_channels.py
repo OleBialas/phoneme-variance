@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+import pandas as pd
 from mne.io import read_raw_brainvision
 from mne.channels import make_standard_montage
 from pyprep.ransac import find_bad_by_ransac
