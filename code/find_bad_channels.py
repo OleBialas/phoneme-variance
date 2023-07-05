@@ -11,12 +11,34 @@ positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 subfolders = list((root / "raw").glob("sub*"))
 subfolders.sort()
 n_bads = []
+
 for subfolder in subfolders:
-    runs = list((subfolder / "eeg").glob("*_eeg.vhdr"))
-    runs.sort()
-    for irun, run in enumerate(runs):
-        bids_path = BIDSPath(subject=subfolder.name.split('-')[1], run=irun+1, root=subfolder.parent)
-        raw = read_raw_brainvision(run, preload=True, verbose=False)
+    n_runs = len(list((subfolder / "eeg").glob("*_eeg.vhdr")))
+    for irun in range(1, n_runs + 1):
+        bids_path = BIDSPath(
+            subject=subfolder.name.split("-")[1], run=irun, root=subfolder.parent
+        )
+        # remove old annotations by setting all channels to 'good'
+        channels = pd.read_csv(
+            subfolder
+            / "eeg"
+            / f"{subfolder.name}_task-listening_run-{str(irun).zfill(2)}_channels.tsv",
+            sep="\t",
+        )
+        channels.status = "good"
+        channels.to_csv(
+            subfolder
+            / "eeg"
+            / f"{subfolder.name}_task-listening_run-{str(irun).zfill(2)}_channels.tsv",
+            sep="\t",
+        )
+        raw = read_raw_brainvision(
+            subfolder
+            / "eeg"
+            / f"{subfolder.name}_task-listening_run-{str(irun).zfill(2)}_eeg.vhdr",
+            preload=True,
+            verbose=False,
+        )
         raw = raw.filter(1, 20, n_jobs=4, verbose=False)
         raw = raw.resample(64, n_jobs=4, verbose=False)
         bads, _ = find_bad_by_ransac(
@@ -27,6 +49,6 @@ for subfolder in subfolders:
             exclude=[],
         )
         n_bads.append(len(bads))
-        if len(bads)>0:
-            mark_channels(bids_path, ch_names=bads, status='bad')
+        if len(bads) > 0:
+            mark_channels(bids_path, ch_names=bads, status="bad")
 print(n_bads)
