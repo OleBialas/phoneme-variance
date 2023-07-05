@@ -1,9 +1,10 @@
-% Extract envelope using Gammachirp filterbank 
+root = fileparts(pwd)
+% Extract envelope using Gammachirp filterbank `
 %% Set up parameters
 wav_fs=44100; % Sampling frequency of source audio files
 out_fs=128; % Downsample spectrogram to this frequqency
 down_factor=3; % envelope downsampling factor
-mfilename()
+
 % Design lowpass filter
 Fpass = 9e3;
 Fstop = 11e3;
