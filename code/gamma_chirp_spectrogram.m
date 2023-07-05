@@ -31,7 +31,7 @@ for f = 1:2
         [y,Fs] = audioread(f_name);
         assert(Fs==wav_fs);
         y=(y(:,1)); % only keep 1st channel
-        y = filtfilthd(d,y); % Filter below Nyquist frequency
+        y = filtfilt(d,y); % Filter below Nyquist frequency
         y= nt_dsample(y,Fs/GCparam.fs);
         Fs = GCparam.fs;
         spectrogram = GCFBv210(y',GCparam); % Bandpass filter
