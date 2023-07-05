@@ -44,7 +44,7 @@ for f = 1:2
             spectrogram(chn,:)=abs(hilbert(spectrogram(chn,:)));
         end
 
-        save(fullfile('../results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
+        save(fullfile(root,'/results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
     end
 end
 
