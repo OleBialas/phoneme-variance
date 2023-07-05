@@ -71,4 +71,4 @@ for subject in subjects:
         cfg["tmax"],
         cfg["lambda"],
     )
-    trf.save(root / "results" / "trfs" / f"{sub.name}_pho.trf")
+    trf.save(root / "results" / "trfs" / f"{subject.name}_pho.trf")
