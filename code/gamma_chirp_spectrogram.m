@@ -1,4 +1,4 @@
-root = fileparts(pwd)
+rootDir = fileparts(pwd)
 % Extract envelope using Gammachirp filterbank `
 %% Set up parameters
 wav_fs=44100; % Sampling frequency of source audio files
@@ -22,9 +22,9 @@ GCparam.NumCh = 8
 Fs = GCparam.fs;
 
 %% Envelope extraction 
-folders = char('multi_speakers',' single_speaker');
+folders = char('multi_speakers','single_speaker');
 for f = 1:2
-    wavs = dir(strcat('../raw/stimuli/', folders(f, :), '/*.wav'));
+    wavs = dir(fullfile(rootDir, strcat('/raw/stimuli/', folders(f, :), '/*.wav')));
     nwavs = length(wavs);
     envelopes={};
     for i = 1:nwavs
@@ -44,7 +44,7 @@ for f = 1:2
             spectrogram(chn,:)=abs(hilbert(spectrogram(chn,:)));
         end
 
-        save(fullfile(root,'/results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
+        save(fullfile(rootDir,'/results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
     end
 end
 
