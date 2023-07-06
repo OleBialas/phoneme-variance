@@ -11,45 +11,24 @@ from mtrf.model import TRF, cross_validate
 root = Path(__file__).parent.parent.absolute()
 montage = make_standard_montage("biosemi128")
 positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
-cfg = json.load(open(root / "code" / "trf_parameters.json"))
-phoneme_codes = np.asarray(
-    list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
-)
-text_grids = list((root / "raw" / "stimuli" / "single_speaker").glob("*TextGrid"))
 mat_files = list((root / "results" / "spectrograms" / "single_speaker").glob("*.mat"))
-text_grids.sort(), mat_files.sort()
+mat_files.sort()
 
 # get spectograms and phoneme stick functions
-phonemes, spectrograms = [], []
-for t, m in zip(text_grids, mat_files):
-    mat = loadmat(m)
-    spg, fs = mat["spectrogram"], mat["Fs"][0][0]
-    spectrograms.append((spg - spg.mean(axis=0)) / spg.std(axis=0))
-    phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
-    phonemes.append(np.zeros((spectrograms[-1].shape[0], len(phoneme_codes))))
-    for p in phoneme_grid:
-        if p.mark[:2] in phoneme_codes:
-            idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
-            start = round(p.minTime * fs)
-            stop = round(p.maxTime * fs)
-            phonemes[-1][start:stop, idx] = 1
-onsets = []
-for s in spectrograms:
-    o = np.diff(s.mean(axis=1, keepdims=True), prepend=np.zeros((1, 1)), axis=0).clip(
-        min=0
-    )
-    onsets.append((o - o.mean()) / o.std())
 stimulus = []
-for s, o, p in zip(spectrograms, onsets, phonemes):
-    stimulus.append(np.concatenate([s, o, p], axis=1))
+for m in mat_files:
+    mat = loadmat(m)
+    env, fs = mat["spectrogram"].mean(axis=1), mat["Fs"][0][0]
+    stimulus.append((env - env.mean()) / env.std())
 
+trfs = []
 subjects = list((root / "raw").glob("sub-0*"))
 for subject in subjects:
     response = []
     recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
     channels = list((subject / "eeg").glob("*_channels.tsv"))
     recordings.sort(), channels.sort()
-    for rec, chs, stm in zip(recordings, channels, stimulus):
+    for rec, chs in zip(recordings, channels):
         raw = read_raw_brainvision(rec, verbose=False, preload=True)
         raw.set_montage(montage)
         bads = (pd.read_csv(chs, sep="\t").status == "bad").tolist()
@@ -69,12 +48,8 @@ for subject in subjects:
             response[i] = response[i][: len(s)]
 
     trf = TRF()
-    trf.train(
-        stimulus,
-        response,
-        raw.info["sfreq"],
-        cfg["tmin"],
-        cfg["tmax"],
-        cfg["lambda"],
-    )
-    trf.save(root / "results" / "trfs" / f"{subject.name}.trf")
+    trf.train(stimulus, response, fs, -0.1, 0.4, 10)
+    trfs.append(trf)
+
+avg_trf = np.mean(trfs)
+avg_trf = avg_trf.to_mne_evoked(montage)[0]
