@@ -14,28 +14,38 @@ from mtrf.model import TRF, cross_validate
 root = Path(__file__).parent.parent.absolute()
 montage = make_standard_montage("biosemi128")
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
-cfg["lambda"] = 10000
+cfg["lambda"] = np.logspace(-1, 5, 8)
 positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
+phoneme_codes = np.asarray(
+    list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
+)
 
 for data_set, subject_id in zip(
     ["single_speaker", "multi_speakers"], ["sub-0*", "sub-1*"]
 ):
-    # mat_files = list((root / "results" / "spectrograms" / data_set).glob("*.mat"))
-    mat_files = list(Path("/home/obi/downloads/features").glob("audio*"))
+    text_grids = list((root / "raw" / "stimuli" / data_set).glob("*TextGrid"))
+    mat_files = list((root / "results" / "spectrograms" / data_set).glob("*.mat"))
     subjects = list((root / "raw").glob(subject_id))
-    mat_files.sort(), subjects.sort()
+    mat_files.sort(), text_grids.sort(), subjects.sort()
 
-    trfs, correlations = [], []
+    trfs, correlation, stimulus = [], [], []
+    for t, m in zip(text_grids, mat_files):
+        mat = loadmat(m)
+        spg, fs = mat["spectrogram"], mat["Fs"][0][0]
+        phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
+        stimulus.append(np.zeros((spg.shape[0], len(phoneme_codes))))
+        for p in phoneme_grid:
+            if p.mark[:2] in phoneme_codes:
+                idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
+                start = round(p.minTime * fs)
+                stop = round(p.maxTime * fs)
+                stimulus[-1][start:stop, idx] = 1
+
     for subject in subjects:
-        stimulus, response = [], []
-        for m in mat_files:
-            mat = loadmat(m)
-            spg, fs = mat["spg"], mat["fs"][0][0]
-            stimulus.append((spg - spg.mean(axis=0)) / spg.std(axis=0))
-
         recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
         channels = list((subject / "eeg").glob("*_channels.tsv"))
         recordings.sort(), channels.sort()
+        response = []
         for rec, chs in zip(recordings, channels):
             raw = read_raw_brainvision(rec, verbose=False, preload=True)
             raw = raw.set_montage(montage)
@@ -43,7 +53,7 @@ for data_set, subject_id in zip(
             raw.info["bads"] = [
                 ch for ch, bad in zip(raw.info["ch_names"], bads) if bad is True
             ]
-            # raw = raw.interpolate_bads()
+            raw = raw.interpolate_bads()
             raw = raw.filter(1, 20)
             raw = raw.resample(fs)
             raw = raw.set_eeg_reference("average")
@@ -52,7 +62,10 @@ for data_set, subject_id in zip(
             response.append(raw)
 
         for i, (s, r) in enumerate(zip(stimulus, response)):
-            if len(s) > len(r):
+            if len(s) > len(r):  # pad response with zeros
+                response[i] = np.concatenate(
+                    [r, np.zeros((len(s) - len(r), r.shape[-1]))]
+                )
                 stimulus[i] = stimulus[i][: len(r)]
             if len(r) > len(s):
                 response[i] = response[i][: len(s)]
