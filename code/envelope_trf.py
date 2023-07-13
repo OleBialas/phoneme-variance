@@ -20,8 +20,7 @@ positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 for data_set, subject_id in zip(
     ["single_speaker", "multi_speakers"], ["sub-0*", "sub-1*"]
 ):
-    # mat_files = list((root / "results" / "spectrograms" / data_set).glob("*.mat"))
-    mat_files = list(Path("/home/obi/downloads/features").glob("audio*"))
+    mat_files = list((root / "results" / "spectrograms" / data_set).glob("*.mat"))
     subjects = list((root / "raw").glob(subject_id))
     mat_files.sort(), subjects.sort()
 
@@ -30,7 +29,7 @@ for data_set, subject_id in zip(
         stimulus, response = [], []
         for m in mat_files:
             mat = loadmat(m)
-            spg, fs = mat["spg"], mat["fs"][0][0]
+            spg, fs = mat["spectrogram"], mat["Fs"][0][0]
             stimulus.append((spg - spg.mean(axis=0)) / spg.std(axis=0))
 
         recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
@@ -43,7 +42,7 @@ for data_set, subject_id in zip(
             raw.info["bads"] = [
                 ch for ch, bad in zip(raw.info["ch_names"], bads) if bad is True
             ]
-            # raw = raw.interpolate_bads()
+            raw = raw.interpolate_bads()
             raw = raw.filter(1, 20)
             raw = raw.resample(fs)
             raw = raw.set_eeg_reference("average")

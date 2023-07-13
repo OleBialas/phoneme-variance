@@ -37,13 +37,13 @@ for f = 1:2
         Fs = GCparam.fs;
         spectrogram = GCFBv210(y',GCparam); % Bandpass filter
         spectrogram = spectrogram';
-        Fs=out_fs;
 
         for chn=1:size(spectrogram,1) % envelope of each spectrogram band
             spectrogram(chn,:)=abs(hilbert(spectrogram(chn,:)));
         end
 
         spectrogram = resample(spectrogram, out_fs, Fs);
+        Fs=out_fs;
 
         save(fullfile(rootDir,'/results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
     end
