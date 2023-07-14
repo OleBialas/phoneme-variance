@@ -31,10 +31,10 @@ df = pd.DataFrame(columns=["subject", "phoneme", "weight", "svar", "tvar", "coun
 trf_files = list((root / "results" / "trfs").glob(f"sub-0[0-9][0-9].trf"))
 trf_files.sort()
 for tf in trf_files:
-    subject = tf.name.split("_")[0]
+    subject = int(re.findall(r"\d+", tf.name)[0])
     trf = TRF()
     trf.load(tf)
-    weights = np.abs(trf.weights[17:, :, chs]).mean(axis=(1, 2))
+    weights = np.abs(trf.weights[-39:, :, chs]).mean(axis=(1, 2))
     data = np.zeros(
         (len(weights)),
         dtype={
@@ -50,4 +50,4 @@ for tf in trf_files:
     data["phoneme"] = phoneme_codes
     df = pd.concat([df, pd.DataFrame(data)])
 
-df.to_csv(root / "results" / f"phoneme_weights_{model}.csv")
+df.to_csv(root / "results" / f"phoneme_weights.csv")

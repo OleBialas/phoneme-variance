@@ -2,7 +2,7 @@ from pathlib import Path
 import json
 from itertools import compress
 import numpy as np
-import slab
+from scipy.io import loadmat
 import skfda
 from skfda.preprocessing.registration import FisherRaoElasticRegistration
 import textgrid
@@ -12,11 +12,10 @@ root = Path(__file__).parent.parent.absolute()
 phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
-
 # for single speaker data align the phonemes across all files
 textgrids = list((root / "raw" / "stimuli" / "single_speaker").glob("*.TextGrid"))
 spectrograms = list(
-    (root / "results" / "spectrograms" / "single_speaker").glob("*_spg.wav")
+    (root / "results" / "spectrograms" / "single_speaker").glob("*_spg.mat")
 )
 textgrids.sort(), spectrograms.sort()
 
@@ -24,14 +23,14 @@ textgrids.sort(), spectrograms.sort()
 for pc in phoneme_codes:
     phoneme_spectrograms = []
     for t, s in zip(textgrids, spectrograms):
-        spectrogram = slab.Sound(s)
+        mat = loadmat(s)
+        spectrogram, Fs = mat["spectrogram"], mat["Fs"][0][0]
         phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
         for p in phoneme_grid:
             if p.mark[:2] == pc:
                 idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
-                start = round(p.minTime * spectrogram.samplerate)
-                stop = round(p.maxTime * spectrogram.samplerate)
-                phoneme_spectrograms.append(spectrogram.data[start:stop, :])
+                start, stop = round(p.minTime * Fs), round(p.maxTime * Fs)
+                phoneme_spectrograms.append(spectrogram[start:stop, :])
 
     # reject outliers
     lengths = np.asarray([len(s) for s in phoneme_spectrograms])
@@ -78,20 +77,20 @@ for pc in phoneme_codes:
 # for mutli speaker data align the phonemes for each file
 textgrids = list((root / "raw" / "stimuli" / "multi_speakers").glob("*.TextGrid"))
 spectrograms = list(
-    (root / "results" / "spectrograms" / "multi_speakers").glob("*_spg.wav")
+    (root / "results" / "spectrograms" / "multi_speakers").glob("*spg.mat")
 )
 textgrids.sort(), spectrograms.sort()
 
 for t, s in zip(textgrids, spectrograms):
-    spectrogram = slab.Sound(s)
+    mat = loadmat(s)
+    spectrogram, Fs = mat["spectrogram"], mat["Fs"][0][0]
     phoneme_grid = textgrid.TextGrid.fromFile(t)[0]
     for pc in phoneme_codes:  # get the envelope for each phoneme utterance
         phoneme_spectrograms = []
         for p in phoneme_grid:
             if p.mark[:2] == pc:
                 idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
-                start = round(p.minTime * spectrogram.samplerate)
-                stop = round(p.maxTime * spectrogram.samplerate)
+                start, stop = round(p.minTime * Fs), round(p.maxTime * Fs)
                 phoneme_spectrograms.append(spectrogram.data[start:stop, :])
         if len(phoneme_spectrograms) > 2:
             # reject outliers
