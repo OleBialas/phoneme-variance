@@ -72,7 +72,7 @@ for subject in subjects:
     trf.train(
         stimulus,
         response,
-        raw.info["sfreq"],
+        fs,
         cfg["tmin"],
         cfg["tmax"],
         cfg["lambda"],
