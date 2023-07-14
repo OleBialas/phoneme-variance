@@ -26,35 +26,28 @@ for ip, phoneme in enumerate(phoneme_codes):
     tvar.append(np.abs(wrp - diagonal).mean())
     count.append(spg.shape[0])
 
-for model in ["pho", "spg_pho", "spg_pho_ons"]:
-    df = pd.DataFrame(columns=["subject", "phoneme", "weight", "svar", "tvar", "count"])
+df = pd.DataFrame(columns=["subject", "phoneme", "weight", "svar", "tvar", "count"])
 
-    trf_files = list((root / "results" / "trfs").glob(f"sub-0[0-9][0-9]_{model}.trf"))
-    trf_files.sort()
-    for tf in trf_files:
-        subject = tf.name.split("_")[0]
-        trf = TRF()
-        trf.load(tf)
-        if model == "pho":
-            weights = np.abs(trf.weights[:, :, chs]).mean(axis=(1, 2))
-        elif model == "spg_pho":
-            weights = np.abs(trf.weights[16:, :, chs]).mean(axis=(1, 2))
-        elif model == "spg_pho_ons":
-            weights = np.abs(trf.weights[17:, :, chs]).mean(axis=(1, 2))
+trf_files = list((root / "results" / "trfs").glob(f"sub-0[0-9][0-9].trf"))
+trf_files.sort()
+for tf in trf_files:
+    subject = tf.name.split("_")[0]
+    trf = TRF()
+    trf.load(tf)
+    weights = np.abs(trf.weights[17:, :, chs]).mean(axis=(1, 2))
+    data = np.zeros(
+        (len(weights)),
+        dtype={
+            "names": ("subject", "weight", "phoneme", "svar", "tvar", "count"),
+            "formats": ("U10", "f8", "U10", "f8", "f8", "i8"),
+        },
+    )
+    data["svar"] = svar
+    data["tvar"] = tvar
+    data["count"] = count
+    data["subject"] = np.repeat(subject, len(weights))
+    data["weight"] = weights
+    data["phoneme"] = phoneme_codes
+    df = pd.concat([df, pd.DataFrame(data)])
 
-        data = np.zeros(
-            (len(weights)),
-            dtype={
-                "names": ("subject", "weight", "phoneme", "svar", "tvar", "count"),
-                "formats": ("U10", "f8", "U10", "f8", "f8", "i8"),
-            },
-        )
-        data["svar"] = svar
-        data["tvar"] = tvar
-        data["count"] = count
-        data["subject"] = np.repeat(subject, len(weights))
-        data["weight"] = weights
-        data["phoneme"] = phoneme_codes
-        df = pd.concat([df, pd.DataFrame(data)])
-
-    df.to_csv(root / "results" / f"phoneme_weights_{model}.csv")
+df.to_csv(root / "results" / f"phoneme_weights_{model}.csv")
