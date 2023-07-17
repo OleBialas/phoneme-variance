@@ -2,7 +2,8 @@ library(rethinking)
 library(cmdstanr)
 library(here)
 
-d <- read.csv(here('results', 'phoneme_weights_spg_pho_ons.csv'))
+d <- read.csv(here('results', 'phoneme_weights.csv'))
+d = d[d$count>20, ]
 
 dat  <- list(
 	     W = standardize(d$weight),
@@ -14,8 +15,8 @@ dat  <- list(
 
 f <- alist(
 	   W ~ dstudent(1, mu, sigma),
-	   mu <- a+bC*C+bT*Td+bS*Sd,
-	   a ~ dnorm(0, 0.2),
+	   mu <- a[Sub]+bC*C+bT*Td+bS*Sd,
+	   a[Sub] ~ dnorm(0, 0.2),
 	   bC ~ dnorm(0, 0.5),
 	   bT ~ dnorm(0, 0.5),
 	   bS ~ dnorm(0, 0.5),
@@ -23,7 +24,6 @@ f <- alist(
 )
 
 m <- quap(f, data=dat)
-
 # posterior predictive plot --> how well does the model match
 # the actually observed data
 
@@ -36,8 +36,7 @@ W_pi <- apply(W_sim, 2, PI)
 
 # plot the actually observed weights against the predicted weights
 # useful for determining how good the model is
-plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight', xlim=c(-1.5,4.5), ylim=c(-1.2, 1.2))
-abline(a=0, b=1)
+plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
 
 
 

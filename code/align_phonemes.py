@@ -91,7 +91,7 @@ for t, s in zip(textgrids, spectrograms):
             if p.mark[:2] == pc:
                 idx = np.where(np.asarray(phoneme_codes) == p.mark[:2])[0][0]
                 start, stop = round(p.minTime * Fs), round(p.maxTime * Fs)
-                phoneme_spectrograms.append(spectrogram.data[start:stop, :])
+                phoneme_spectrograms.append(spectrogram[start:stop, :])
         if len(phoneme_spectrograms) > 2:
             # reject outliers
             lengths = np.asarray([len(s) for s in phoneme_spectrograms])
