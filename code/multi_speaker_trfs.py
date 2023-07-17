@@ -95,3 +95,4 @@ for isub, subject in enumerate(subjects):
             )
             _, r, _ = trf.predict(stimulus_val, response_val, average=False)
             correlations[istim, ires, isub] = r[cfg["channels"]].mean()
+np.save(root / "results" / "multi_speakers_correlations.npy", correlations)
