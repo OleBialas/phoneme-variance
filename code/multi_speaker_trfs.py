@@ -79,20 +79,21 @@ for isub, subject in enumerate(subjects):
         raw, fs = raw.get_data().T[: len(s)], raw.info["sfreq"]
         response.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
 
-        for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
-            for ires in range(len(response)):
-                response_val, stimulus_val = response[ires], stimulus[ires]
-                response_train = response[:ires] + response[ires + 1 :]
-                stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
-            trf = TRF()
-            trf.train(
-                stimulus_train,
-                response_train,
-                fs,
-                cfg["tmin"],
-                cfg["tmax"],
-                regularization,
-            )
-            _, r, _ = trf.predict(stimulus_val, response_val, average=False)
-            correlations[istim, ires, isub] = r[cfg["channels"]].mean()
+    for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
+        for ires in range(len(response)):
+            response_val, stimulus_val = response[ires], stimulus[ires]
+            response_train = response[:ires] + response[ires + 1 :]
+            stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
+        trf = TRF()
+        trf.train(
+            stimulus_train,
+            response_train,
+            fs,
+            cfg["tmin"],
+            cfg["tmax"],
+            regularization,
+        )
+        _, r, _ = trf.predict(stimulus_val, response_val, average=False)
+        correlations[istim, ires, isub] = r[cfg["channels"]].mean()
+
 np.save(root / "results" / "multi_speakers_correlations.npy", correlations)
