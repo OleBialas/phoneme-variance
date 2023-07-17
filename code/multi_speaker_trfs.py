@@ -73,8 +73,8 @@ for isub, subject in enumerate(subjects):
         raw.info["bads"] = [
             ch for ch, bad in zip(raw.info["ch_names"], bads) if bad is True
         ]
-        raw = raw.interpolate_bads()
-        raw = raw.filter(1, 20)
+        raw = raw.interpolate_bads(verbose=False)
+        raw = raw.filter(1, 20, verbose=False)
         raw = raw.resample(fs)
         raw = raw.set_eeg_reference("average")
         raw, fs = raw.get_data().T[: len(s)], raw.info["sfreq"]
