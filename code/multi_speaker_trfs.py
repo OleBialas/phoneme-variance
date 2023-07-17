@@ -90,17 +90,17 @@ for isub, subject in enumerate(subjects):
             response_val, stimulus_val = response[ires], stimulus[ires]
             response_train = response[:ires] + response[ires + 1 :]
             stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
-        trf = TRF()
-        trf.train(
-            stimulus_train,
-            response_train,
-            fs,
-            cfg["tmin"],
-            cfg["tmax"],
-            regularization,
-            verbose=False,
-        )
-        _, r, _ = trf.predict(stimulus_val, response_val, average=False)
-        correlations[istim, ires, isub] = r[cfg["channels"]].mean()
+            trf = TRF()
+            trf.train(
+                stimulus_train,
+                response_train,
+                fs,
+                cfg["tmin"],
+                cfg["tmax"],
+                regularization,
+                verbose=False,
+            )
+            _, r, _ = trf.predict(stimulus_val, response_val, average=False)
+            correlations[istim, ires, isub] = r[cfg["channels"]].mean()
 
 np.save(root / "results" / "multi_speakers_correlations.npy", correlations)
