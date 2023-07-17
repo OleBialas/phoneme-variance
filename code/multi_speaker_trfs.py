@@ -58,9 +58,10 @@ for s, o, p in zip(spectrograms, onsets, phonetic_features):
     stimulus_fs.append(np.concatenate([s, o, p], axis=1))
 
 subjects = list((root / "raw").glob("sub-1*"))
-correlations = np.zeros((2, len(stimulus_s), len(stimulus_s)))
-for subject in subjects:
-    responses = []
+# one correlation coefficient per model, segment and subject
+correlations = np.zeros((2, len(stimulus_s), len(subjects)))
+for isub, subject in enumerate(subjects):
+    response = []
     recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
     channels = list((subject / "eeg").glob("*_channels.tsv"))
     recordings.sort(), channels.sort()
@@ -76,13 +77,13 @@ for subject in subjects:
         raw = raw.resample(fs)
         raw = raw.set_eeg_reference("average")
         raw, fs = raw.get_data().T[: len(s)], raw.info["sfreq"]
-        responses.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
+        response.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
 
-        for iset, stimuli in enumerate([stimulus_s, stimulus_fs]):
-            for i in range(len(responses)):
-                response_val, stimulus_val = responses[i], stimuli[i]
-                response_train = responses[:i] + responses[i + 1 :]
-                stimulus_train = stimuli[:i] + stimuli[i + 1 :]
+        for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
+            for ires in range(len(responses)):
+                response_val, stimulus_val = response[ires], stimulus[ires]
+                response_train = responses[:ires] + responses[ires + 1 :]
+                stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
             trf = TRF()
             trf.train(
                 stimulus_train,
@@ -92,4 +93,5 @@ for subject in subjects:
                 cfg["tmax"],
                 regularization,
             )
-            _, r, _ = trf.predict(stimulus_val, response_val)
+            _, r, _ = trf.predict(stimulus_val, response_val, average=False)
+            correlations[istim, ires, isub] = r[cfg["channels"]].mean()
