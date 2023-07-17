@@ -80,9 +80,9 @@ for isub, subject in enumerate(subjects):
         response.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
 
         for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
-            for ires in range(len(responses)):
+            for ires in range(len(response)):
                 response_val, stimulus_val = response[ires], stimulus[ires]
-                response_train = responses[:ires] + responses[ires + 1 :]
+                response_train = response[:ires] + response[ires + 1 :]
                 stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
             trf = TRF()
             trf.train(
