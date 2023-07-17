@@ -61,7 +61,7 @@ subjects = list((root / "raw").glob("sub-1*"))
 # one correlation coefficient per model, segment and subject
 correlations = np.zeros((2, len(stimulus_s), len(subjects)))
 for isub, subject in enumerate(subjects):
-    print(f"now processing data from {subject.name}")
+    print(f"Loading data from {subject.name}")
     response = []
     recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
     channels = list((subject / "eeg").glob("*_channels.tsv"))
@@ -75,8 +75,8 @@ for isub, subject in enumerate(subjects):
         ]
         raw = raw.interpolate_bads(verbose=False)
         raw = raw.filter(1, 20, verbose=False)
-        raw = raw.resample(fs)
-        raw = raw.set_eeg_reference("average")
+        raw = raw.resample(fs, verbose=False)
+        raw = raw.set_eeg_reference("average", verbose=False)
         raw, fs = raw.get_data().T[: len(s)], raw.info["sfreq"]
         response.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
 
