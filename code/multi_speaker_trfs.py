@@ -61,6 +61,7 @@ subjects = list((root / "raw").glob("sub-1*"))
 # one correlation coefficient per model, segment and subject
 correlations = np.zeros((2, len(stimulus_s), len(subjects)))
 for isub, subject in enumerate(subjects):
+    print(f"now processing data from {subject.name}")
     response = []
     recordings = list((subject / "eeg").glob("*_eeg.vhdr"))
     channels = list((subject / "eeg").glob("*_channels.tsv"))
@@ -80,7 +81,12 @@ for isub, subject in enumerate(subjects):
         response.append((raw - raw.mean(axis=0)) / raw.std(axis=0))
 
     for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
+        if istim == 0:
+            print("Fitting acoustic model")
+        elif istim == 1:
+            print("Fitting acoustic-phonetic model")
         for ires in range(len(response)):
+            print(f"predicting segment {ires}")
             response_val, stimulus_val = response[ires], stimulus[ires]
             response_train = response[:ires] + response[ires + 1 :]
             stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
@@ -92,6 +98,7 @@ for isub, subject in enumerate(subjects):
             cfg["tmin"],
             cfg["tmax"],
             regularization,
+            verbose=False,
         )
         _, r, _ = trf.predict(stimulus_val, response_val, average=False)
         correlations[istim, ires, isub] = r[cfg["channels"]].mean()
