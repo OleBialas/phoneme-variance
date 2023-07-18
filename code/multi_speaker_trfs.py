@@ -21,7 +21,7 @@ phoneme_feature_mapping = json.load(
 )
 phonetic_feature_names = list(phoneme_feature_mapping.keys())
 phoneme_codes = np.unique(np.concatenate(list(phoneme_feature_mapping.values())))
-regularization = np.logspace(-1, 5, 10)
+regularization = [0.1, 1, 10, 100, 1000, 10000, 100000, 1000000]
 
 text_grids = list((root / "raw" / "stimuli" / "multi_speakers").glob("*.TextGrid"))
 mat_files = list((root / "results" / "spectrograms" / "multi_speakers").glob("*.mat"))
@@ -83,14 +83,16 @@ for isub, subject in enumerate(subjects):
     for istim, stimulus in enumerate([stimulus_s, stimulus_fs]):
         if istim == 0:
             print("Fitting acoustic model")
+            method, bands = "ridge", None
         elif istim == 1:
             print("Fitting acoustic-phonetic model")
+            method, bands = "banded", [8, 1, 15]
         for ires in range(len(response)):
             print(f"predicting segment {ires}")
             response_val, stimulus_val = response[ires], stimulus[ires]
             response_train = response[:ires] + response[ires + 1 :]
             stimulus_train = stimulus[:ires] + stimulus[ires + 1 :]
-            trf = TRF()
+            trf = TRF(method=method)
             trf.train(
                 stimulus_train,
                 response_train,
@@ -98,9 +100,10 @@ for isub, subject in enumerate(subjects):
                 cfg["tmin"],
                 cfg["tmax"],
                 regularization,
+                bands = bands
                 verbose=False,
             )
             _, r, _ = trf.predict(stimulus_val, response_val, average=False)
             correlations[istim, ires, isub] = r[cfg["channels"]].mean()
 
-np.save(root / "results" / "multi_speakers_correlations.npy", correlations)
+np.save(root / "results" / "multi_speakers_correlations_banded.npy", correlations)
