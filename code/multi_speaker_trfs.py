@@ -100,7 +100,7 @@ for isub, subject in enumerate(subjects):
                 cfg["tmin"],
                 cfg["tmax"],
                 regularization,
-                bands = bands
+                bands=bands,
                 verbose=False,
             )
             _, r, _ = trf.predict(stimulus_val, response_val, average=False)
