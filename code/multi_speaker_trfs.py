@@ -86,7 +86,7 @@ for isub, subject in enumerate(subjects):
             method, bands = "ridge", None
         elif istim == 1:
             print("Fitting acoustic-phonetic model")
-            method, bands = "banded", [8, 1, 15]
+            method, bands = "banded", [9, 15]
         for ires in range(len(response)):
             print(f"predicting segment {ires}")
             response_val, stimulus_val = response[ires], stimulus[ires]
