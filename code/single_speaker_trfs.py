@@ -9,6 +9,7 @@ import textgrid
 from mtrf.model import TRF, cross_validate
 
 root = Path(__file__).parent.parent.absolute()
+mne.set_log_level(verbose=False)
 montage = make_standard_montage("biosemi128")
 positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
@@ -77,4 +78,13 @@ for subject in subjects:
         cfg["tmax"],
         cfg["lambda"],
     )
+    r, _ = trf.test(
+        stimulus,
+        response,
+        fs,
+        cfg["tmin"],
+        cfg["tmax"],
+        cfg["lambda"],
+    )
     trf.save(root / "results" / "trfs" / f"{subject.name}.trf")
+    np.save(root / "results" / f"{subject.name}_corrmap.npy", r)

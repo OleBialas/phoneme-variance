@@ -12,42 +12,35 @@ phoneme_codes = np.asarray(
 )
 audios = list((root / "results" / "aligned" / "multi_speakers").glob("audio*"))
 audios.sort()
-min_n = 20  # minimum number of utterances neccessary for a phoneme to be considered
-
-n_phonemes = []
-amp_var_speaker, tmp_var_speaker, n_phonemes_speaker = [], [], []
-for a in audios:
+r = np.load(root / "results" / "multi_speakers_correlations.npy")
+n_subjects = r.shape[-1]
+df = pd.DataFrame(
+    columns=[
+        "tmp_var",
+        "amp_var",
+        "audio",
+        "subject",
+        "r_s",
+        "r_fs",
+    ]
+)
+for ia, a in enumerate(audios):
     amp_var, tmp_var = [], []
     for pc in phoneme_codes:
         if (a / f"{pc}_warping.npy").exists():
-            warping = np.load(a / f"{pc}_warping.npy")
-            spectrograms = np.load(a / f"{pc}_spectrograms.npy")
-            if spectrograms.shape[0] >= min_n:
-                # spectral variance -> mean difference of utterances to the average phoneme
-                amp_var.append(np.abs(spectrograms - spectrograms.mean(axis=0)).mean())
-                # temporal variance -> mean difference of warping to the diagonal
-                diagonal = np.linspace(0, 1, warping.shape[-1])
-                tmp_var.append(np.abs(warping - diagonal).mean())
-    amp_var_speaker.append(np.mean(amp_var))
-    tmp_var_speaker.append(np.mean(tmp_var))
-    n_phonemes_speaker.append(len(amp_var))
+            wrp = np.load(a / f"{pc}_warping.npy")
+            spg = np.load(a / f"{pc}_spectrograms.npy")
+            amp_var.append(np.abs(spg - spg.mean(axis=0)).mean(axis=(1, 2)))
+            tmp_var.append(np.abs(wrp - np.linspace(0, 1, wrp.shape[-1])).mean(axis=1))
 
-correlations = np.load(root / "results" / "multi_speakers_correlations.npy")
-delta_r = correlations[1] - correlations[0]
-
-df = pd.DataFrame(columns=["temp_var", "amp_var", "audio_nr", "subject_nr", "delta_r"])
-
-for isub in range(delta_r.shape[-1]):
-    sub_delta_r = delta_r[:, isub]
-    sub_data = pd.DataFrame(
-        {
-            "temp_var": tmp_var_speaker,
-            "amp_var": amp_var_speaker,
-            "audio_nr": np.arange(1, len(amp_var_speaker) + 1),
-            "subject_nr": isub + 1,
-            "delta_r": sub_delta_r,
-        }
-    )
-    df = pd.concat([df, sub_data])
+    for isub in range(n_subjects):
+        df.loc[len(df)] = [
+            np.concatenate(tmp_var).mean(),
+            np.concatenate(amp_var).mean(),
+            ia + 1,
+            isub + 1,
+            r[0, ia, isub],
+            r[1, ia, isub],
+        ]
 
 df.to_csv(root / "results" / "variance_per_speaker.csv")
