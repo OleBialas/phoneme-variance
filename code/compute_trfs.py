@@ -5,20 +5,21 @@ import pandas as pd
 from scipy.io import loadmat
 from mne.io import read_raw_brainvision
 from mne.channels import make_standard_montage
+from mne import set_log_level
 import textgrid
 from mtrf.model import TRF
 from mtrf.stats import cross_validate
 
 root = Path(__file__).parent.parent.absolute()
-mne.set_log_level(verbose=False)
+set_log_level(verbose=False)
 montage = make_standard_montage("biosemi128")
 positions = np.stack([ch for ch in montage.get_positions()["ch_pos"].values()])
 cfg = json.load(open(root / "code" / "trf_parameters.json"))
 phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
-text_grids = list((root / "raw" / "stimuli" / "single_speaker").glob("*TextGrid"))
-mat_files = list((root / "results" / "spectrograms" / "single_speaker").glob("*.mat"))
+text_grids = list((root / "raw" / "stimuli").glob("*TextGrid"))
+mat_files = list((root / "results" / "spectrograms").glob("*.mat"))
 text_grids.sort(), mat_files.sort()
 
 # get spectograms and phoneme stick functions
@@ -90,4 +91,4 @@ for subject in subjects:
         average=False,
     )
     trf.save(root / "results" / "trfs" / f"{subject.name}.trf")
-    np.save(root / "results" / f"{subject.name}_corrmap.npy", r)
+    np.save(root / "results" / "correlations" / f"{subject.name}_corrmap.npy", r)
