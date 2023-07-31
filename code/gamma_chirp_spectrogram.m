@@ -29,7 +29,7 @@ for i = 1:nwavs
             'StopbandAttenuation', 65,...
             'SampleRate', Fs,...
             'DesignMethod', 'cheby2');
-        GCparam.fs = Fs/down_factor;
+        GCparam.fs = Fs;
     end
 
     y=(y(:,1)); % only keep 1st channel
