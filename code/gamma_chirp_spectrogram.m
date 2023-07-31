@@ -12,7 +12,8 @@ Astop = 60;
 
 % GammacHirp filterbank
 GCparam.FRange = [80,8e3];
-GCparam.OutMidCrct = 'ELC'; GCparam.NumCh = 8;
+GCparam.OutMidCrct = 'ELC';
+GCparam.NumCh = 16;
 
 %% Envelope extraction 
 folders = char('multi_speakers','single_speaker');
