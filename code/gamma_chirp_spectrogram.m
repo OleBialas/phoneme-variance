@@ -44,6 +44,6 @@ for i = 1:nwavs
     spectrogram = resample(spectrogram, out_fs, Fs);
     Fs=out_fs;
 
-    save(fullfile(rootDir,'/results/spectrograms/',folders(f,:), strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
+    save(fullfile(rootDir,'/results/spectrograms/', strcat(wavs(i).name(1:end-4),'_spg.mat')), 'spectrogram', 'Fs');
 end
 
