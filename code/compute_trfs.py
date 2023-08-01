@@ -59,7 +59,8 @@ for subject in subjects:
         raw.info["bads"] = [
             ch for ch, bad in zip(raw.info["ch_names"], bads) if bad is True
         ]
-        raw = raw.interpolate_bads()
+        if len(raw.info["bads"]) > 0:
+            raw = raw.interpolate_bads()
         raw = raw.filter(1, 20)
         raw = raw.resample(fs)
         raw = raw.set_eeg_reference("average")
