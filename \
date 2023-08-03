@@ -1,0 +1,51 @@
+# Phonetic features
+
+## Manner of Articulation
+The configuration and interaction of the ariculators when producing a sound.
+On the broadest level, speech sounds can be classified into those that obstruct airflow (obstruents) and those that don't (sonorants). All obstruets and some sonorants are **consonants**.
+
+Obstruents can be further divided into **plosives** (plo), also known as stops, **fricatives** (fri) and **affricates** (aff) which are consonants that begin as a plosive and release a fricative.
+
+Sonorants can be further divided into **liquids** (liq), **nasalas** (nas), **approximants** (app), which all are consonants, and **vowels** (vow)
+
+```dot
+digraph {
+  obstruents -> plo;
+  obstruents -> fri;
+  obstruents -> aff;
+  sonorants -> vow;
+  sonorants -> liq;
+  sonorants -> nas;
+  sonorants -> app;
+}
+```
+
+## Place of Articulation
+The location along the vocal tract where sound production of a consonant occurrs. Since vowels are articulated with an open vocal tract, their place cannot be easily determined. In North American English there are seven places of articulation: bilabial, labiodental, dental, alveolar, palatal, velar and glottal. Except for 'glottal' they can be paired into more general categories
+
+```dot
+digraph {
+  labials -> bilabials;
+  labials -> labiodentals;
+  crononals -> dentals;
+  crononals -> alveolars;
+  dorsals -> palatals;
+  dorsals -> velars;
+}
+```
+
+
+They are independent of the manner of articulation - for example both plosives, which are obstruents, and nasals, which are sonorants, are made bilabial.
+
+## Vowel space
+The articulation of phonemes is defined along two axes. The first axis is the positioning of the tongue relative to the roof of the moth which goes from **close/high** (the tounge is pressed to the roof) via **mid** to **open/low** (the tongue is as far away from the roof as possible). More detailed descriptions include several intermediates between those three categories.
+
+The second axis is the position of the tongue realtive to the front of the mouth. It goes from **front** (the tongue is positioned as far forward as possible without leading to a constriction that would make the sound a consonant) via **central** to **back** (the tongue is positioned as far backward as possible without leading to a constriction that would make the sound a consonant).
+
+```dot
+digraph {
+  front -> central;
+  central -> back
+}
+```
+
