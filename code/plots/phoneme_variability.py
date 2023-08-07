@@ -10,7 +10,7 @@ from mne.channels import make_standard_montage
 import scienceplots
 from adjustText import adjust_text
 
-plt.style.use(["science", "ieee", "no-latex"])
+plt.style.use(["science", "ieee", "no-latex", "high-vis"])
 
 root = Path(__file__).parent.parent.absolute()
 raw = read_raw_brainvision(
@@ -75,7 +75,7 @@ ax["C"].scatter(
     amp_var[is_vowel],
     s=size[is_vowel],
     facecolors="none",
-    edgecolors="C1",
+    edgecolors="C3",
     label="vowels",
     alpha=0.7,
 )
@@ -85,7 +85,7 @@ ax["C"].scatter(
     amp_var[~is_vowel],
     s=size[~is_vowel],
     facecolors="none",
-    edgecolors="C2",
+    edgecolors="C4",
     label="consonants",
     alpha=0.7,
 )
