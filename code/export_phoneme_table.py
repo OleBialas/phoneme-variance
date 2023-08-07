@@ -14,11 +14,11 @@ chs = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
 # and temporal warping across all utterances of the same phoneme
 svar, tvar, count = [], [], []
 for ip, phoneme in enumerate(phoneme_codes):
-    spg = np.load(results / "aligned" / f"{phoneme}_spectrograms.npy")
+    spg = np.load("results" / "aligned" / f"{phoneme}_spectrograms.npy")
     # spectral variance -> mean difference of utterances to the average phoneme
     svar.append(np.abs(spg - spg.mean(axis=0)).mean())
     # temporal variance -> mean difference of warping to the diagonal
-    wrp = np.load(directory / f"{phoneme}_warping.npy")
+    wrp = np.load("results" / "aligned" / f"{phoneme}_warping.npy")
     diagonal = np.linspace(0, 1, wrp.shape[-1])
     tvar.append(np.abs(wrp - diagonal).mean())
     count.append(spg.shape[0])
