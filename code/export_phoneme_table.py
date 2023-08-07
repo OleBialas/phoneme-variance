@@ -8,9 +8,7 @@ root = Path(__file__).parent.parent.absolute()
 phoneme_codes = np.asarray(
     list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
 )
-cfg = json.load(open(root / "code" / "trf_parameters.json"))
-
-chs = [106, 107, 108, 115, 116, 117, 54, 55, 56, 61, 62, 63]
+chs = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
 
 # first, compute the average phoneme weight for each subject and average spectral distance
 # and temporal warping across all utterances of the same phoneme

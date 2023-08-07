@@ -19,6 +19,9 @@ raw = read_raw_brainvision(
 raw = raw.set_montage(make_standard_montage("biosemi128"))
 
 phonemes = json.load(open(root / "code" / "phonemes.json"))
+channels = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
+mask = np.repeat(False, 128)
+mask[channels] = True
 
 ipa_codes = [p["ipa"] for p in phonemes.values()]
 is_vowel = np.asarray([p["manner"] == "vowel" for p in phonemes.values()])
