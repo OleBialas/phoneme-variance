@@ -6,7 +6,7 @@ from mtrf.model import TRF
 
 root = Path(__file__).parent.parent.absolute()
 phoneme_codes = np.asarray(
-    list(json.load(open(root / "code" / "phoneme_codes.json")).keys())
+    list(json.load(open(root / "code" / "phonemes.json")).keys())
 )
 chs = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
 
