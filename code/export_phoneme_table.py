@@ -13,18 +13,20 @@ chs = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
 
 # first, compute the average phoneme weight for each subject and average spectral distance
 # and temporal warping across all utterances of the same phoneme
-svar, tvar, count = [], [], []
+amplitude_var, phase_var, count = [], [], []
 for ip, phoneme in enumerate(phoneme_codes):
     spg = np.load(root / "results" / "aligned" / f"{phoneme}_spectrograms.npy")
     # spectral variance -> mean difference of utterances to the average phoneme
-    svar.append(np.abs(spg - spg.mean(axis=0)).mean())
+    amplitude_var.append(np.abs(spg - spg.mean(axis=0)).mean())
     # temporal variance -> mean difference of warping to the diagonal
     wrp = np.load(root / "results" / "aligned" / f"{phoneme}_warping.npy")
     diagonal = np.linspace(0, 1, wrp.shape[-1])
-    tvar.append(np.abs(wrp - diagonal).mean())
+    phase_var.append(np.abs(wrp - diagonal).mean())
     count.append(spg.shape[0])
 
-df = pd.DataFrame(columns=["subject", "phoneme", "weight", "svar", "tvar", "count"])
+df = pd.DataFrame(
+    columns=["subject", "phoneme", "weight", "amplitude_var", "phase_var", "count"]
+)
 
 trf_files = list((root / "results" / "trfs").glob("*.trf"))
 trf_files.sort()
@@ -36,12 +38,19 @@ for tf in trf_files:
     data = np.zeros(
         (len(weights)),
         dtype={
-            "names": ("subject", "weight", "phoneme", "svar", "tvar", "count"),
+            "names": (
+                "subject",
+                "weight",
+                "phoneme",
+                "amplitude_var",
+                "phase_var",
+                "count",
+            ),
             "formats": ("U10", "f8", "U10", "f8", "f8", "i8"),
         },
     )
-    data["svar"] = svar
-    data["tvar"] = tvar
+    data["amplitude_var"] = amplitude_var
+    data["phase_var"] = phase_var
     data["count"] = count
     data["subject"] = np.repeat(subject, len(weights))
     data["weight"] = weights
