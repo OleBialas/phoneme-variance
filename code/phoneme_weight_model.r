@@ -6,8 +6,8 @@ d <- read.csv(here('results', 'phoneme_weights.csv'))
 
 dat  <- list(
 	     W = standardize(d$weight),
-	     Td = standardize(d$tvar),
-	     Sd = standardize(d$svar),
+	     Td = standardize(d$phase_var),
+	     Sd = standardize(d$amplitude_var),
 	     C = standardize(d$count),
          Sub = d$subject
 )
@@ -36,15 +36,7 @@ d$weight_sim = mu_mean
 # plot the actually observed weights against the predicted weights
 plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
 
-d <- data.frame(
-    subject=d$subject,
-    phoneme=d$phoneme,
-    weight=standardize(d$weight),
-    avar=d$svar,
-    pvar = d$tvar,
-    count = d$count,
-    weight_sim =mu_mean)
-
+d$weight_sim <- mu_mean
 write.csv(d, here('results', 'phoneme_weights_predictions.csv'))
 
 post <- extract.samples(m)
