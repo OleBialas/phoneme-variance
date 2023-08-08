@@ -33,8 +33,7 @@ mu_PI <- apply(mu, 2, PI)
 W_sim <- sim(m, n=1e4)
 W_pi <- apply(W_sim, 2, PI)
 d$weight_sim = mu_mean
-# plot the actually observed weights against the predicted weights
-plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
+# plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
 
 d$weight_sim <- mu_mean
 write.csv(d, here('results', 'phoneme_weights_predictions.csv'))
