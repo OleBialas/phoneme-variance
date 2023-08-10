@@ -115,8 +115,10 @@ for a, label, x, y in zip(ax[0:2], ["A", "B"], [0, 0], [1.05, 1.05]):
         ha="right",
     )
 
-var_explained = sum(df_phonemes.weight - df_phonemes.weight_sim)**2)/len(df_phonemes)
-r2 = (df_phonemes.weight.var()-var_explained)/df_phonemes.weight.var()
-print(f'R^2={r2}')
+var_explained = sum((df_phonemes.weight - df_phonemes.weight_sim) ** 2) / len(
+    df_phonemes
+)
+r2 = (df_phonemes.weight.var() - var_explained) / df_phonemes.weight.var()
+print(f"R^2={r2}")
 
 fig.savefig(root / "results" / "plots" / "weight_model.png", dpi=300)
