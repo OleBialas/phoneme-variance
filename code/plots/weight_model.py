@@ -20,7 +20,7 @@ is_vowel = np.asarray([p["manner"] == "vowel" for p in phonemes.values()])
 vowels = np.asarray(list(phonemes.keys()))[is_vowel]
 consonants = np.asarray(list(phonemes.keys()))[~is_vowel]
 
-df_phonemes = pd.read_csv(root / "results" / "phoneme_weights_predictions_no_ah.csv")
+df_phonemes = pd.read_csv(root / "results" / "phoneme_weights_predictions.csv")
 df_phonemes.weight -= df_phonemes.weight.mean()
 df_phonemes.weight /= df_phonemes.weight.std()
 df_vowels = df_phonemes[df_phonemes.phoneme.isin(vowels)]
