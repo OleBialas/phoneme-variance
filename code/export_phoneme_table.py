@@ -25,15 +25,25 @@ for ip, phoneme in enumerate(phoneme_codes):
     count.append(spg.shape[0])
 
 df = pd.DataFrame(
-    columns=["subject", "phoneme", "weight", "amplitude_var", "phase_var", "count"]
+    columns=[
+        "subject",
+        "phoneme",
+        "weight",
+        "amplitude_var",
+        "phase_var",
+        "count",
+        "correlation",
+    ]
 )
 
 trf_files = list((root / "results" / "trfs").glob("*.trf"))
-trf_files.sort()
-for tf in trf_files:
+corr_files = list((root / "results" / "correlations").glob("*.npy"))
+trf_files.sort(), corr_files.sort()
+for tf, cf in zip(trf_files, corr_files):
     subject = int(re.findall(r"\d+", tf.name)[0])
     trf = TRF()
     trf.load(tf)
+    correlation = np.load(cf)[chs].mean()
     weights = np.abs(trf.weights[-39:, :, chs]).mean(axis=(1, 2))
     data = np.zeros(
         (len(weights)),
@@ -45,8 +55,9 @@ for tf in trf_files:
                 "amplitude_var",
                 "phase_var",
                 "count",
+                "correlation",
             ),
-            "formats": ("U10", "f8", "U10", "f8", "f8", "i8"),
+            "formats": ("U10", "f8", "U10", "f8", "f8", "i8", "f8"),
         },
     )
     data["amplitude_var"] = amplitude_var
@@ -55,6 +66,7 @@ for tf in trf_files:
     data["subject"] = np.repeat(subject, len(weights))
     data["weight"] = weights
     data["phoneme"] = phoneme_codes
+    data["correlation"] = correlation
     df = pd.concat([df, pd.DataFrame(data)])
 
 df.to_csv(root / "results" / f"phoneme_weights.csv")
