@@ -82,9 +82,9 @@ y = density(x)
 ax[2].plot(x, density(x), color="C2", linestyle="-", linewidth=2)
 ax[2].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C2")
 
-ax[1].scatter(df_vowels.weight, df_vowels.weight_sim, color="C3", label="vowels")
+ax[1].scatter(df_vowels.weight, df_vowels.weight_sim, facecolors="none", edgecolors="C3", label="vowels")
 ax[1].scatter(
-    df_consonants.weight, df_consonants.weight_sim, color="C4", label="consonants"
+    df_consonants.weight, df_consonants.weight_sim, facecolors="none", edgecolors="C4", label="consonants"
 )
 
 ax[1].set(
