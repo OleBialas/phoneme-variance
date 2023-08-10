@@ -13,7 +13,7 @@ chs = json.load(open(root / "code" / "trf_parameters.json"))["channels"]
 
 # first, compute the average phoneme weight for each subject and average spectral distance
 # and temporal warping across all utterances of the same phoneme
-amplitude_var, phase_var, count = [], [], []
+amplitude_var, phase_var, occurrences = [], [], []
 for ip, phoneme in enumerate(phoneme_codes):
     spg = np.load(root / "results" / "aligned" / f"{phoneme}_spectrograms.npy")
     # spectral variance -> mean difference of utterances to the average phoneme
@@ -22,7 +22,7 @@ for ip, phoneme in enumerate(phoneme_codes):
     wrp = np.load(root / "results" / "aligned" / f"{phoneme}_warping.npy")
     diagonal = np.linspace(0, 1, wrp.shape[-1])
     phase_var.append(np.abs(wrp - diagonal).mean())
-    count.append(spg.shape[0])
+    occurrences.append(spg.shape[0])
 
 df = pd.DataFrame(
     columns=[
@@ -31,7 +31,7 @@ df = pd.DataFrame(
         "weight",
         "amplitude_var",
         "phase_var",
-        "count",
+        "occurrences",
         "correlation",
     ]
 )
@@ -54,7 +54,7 @@ for tf, cf in zip(trf_files, corr_files):
                 "phoneme",
                 "amplitude_var",
                 "phase_var",
-                "count",
+                "occurrences",
                 "correlation",
             ),
             "formats": ("U10", "f8", "U10", "f8", "f8", "i8", "f8"),
@@ -62,7 +62,7 @@ for tf, cf in zip(trf_files, corr_files):
     )
     data["amplitude_var"] = amplitude_var
     data["phase_var"] = phase_var
-    data["count"] = count
+    data["occurrences"] = occurrences
     data["subject"] = np.repeat(subject, len(weights))
     data["weight"] = weights
     data["phoneme"] = phoneme_codes
