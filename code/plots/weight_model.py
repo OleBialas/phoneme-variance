@@ -33,8 +33,8 @@ fig, ax = plt.subplots(1, 2, figsize=(8, 4))
 divider = make_axes_locatable(ax[0])
 ax = np.append(ax, divider.append_axes("right", size="100%", pad=0.1))
 
-colors = ["C0", "C1", "C2"]
-labels = ["temporal var.", "amplitude var.", "occurrence"]
+colors = ["C0", "C1", "C2", "C5"]
+labels = ["amplitude var.", "phase var.", "occurrence", "accuracy"]
 patches = [mpatches.Patch(color=c, label=l) for c, l in zip(colors, labels)]
 ax[2].legend(handles=patches, loc=(0, 0.8))
 
@@ -76,15 +76,31 @@ y = density(x)
 ax[0].plot(x, density(x), color="C1", linestyle="-", linewidth=2)
 ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C1")
 
-density = gaussian_kde(df_post["count"])
+density = gaussian_kde(df_post.correlation)
+x = np.linspace(0.5, 0.76, 200)
+y = density(x)
+ax[0].plot(x, density(x), color="C5", linestyle="-", linewidth=2)
+ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C5")
+
+density = gaussian_kde(df_post.occurrence)
 x = np.linspace(0.5, 0.76, 200)
 y = density(x)
 ax[2].plot(x, density(x), color="C2", linestyle="-", linewidth=2)
 ax[2].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C2")
 
-ax[1].scatter(df_vowels.weight, df_vowels.weight_sim, facecolors="none", edgecolors="C3", label="vowels")
 ax[1].scatter(
-    df_consonants.weight, df_consonants.weight_sim, facecolors="none", edgecolors="C4", label="consonants"
+    df_vowels.weight,
+    df_vowels.weight_sim,
+    facecolors="none",
+    edgecolors="C3",
+    label="vowels",
+)
+ax[1].scatter(
+    df_consonants.weight,
+    df_consonants.weight_sim,
+    facecolors="none",
+    edgecolors="C4",
+    label="consonants",
 )
 
 ax[1].set(
