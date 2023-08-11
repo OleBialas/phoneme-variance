@@ -77,7 +77,7 @@ ax[0].plot(x, density(x), color="C1", linestyle="-", linewidth=2)
 ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C1")
 
 density = gaussian_kde(df_post.correlation)
-x = np.linspace(0.5, 0.76, 200)
+x = np.linspace(0, 0.22, 200)
 y = density(x)
 ax[0].plot(x, density(x), color="C5", linestyle="-", linewidth=2)
 ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C5")
