@@ -31,7 +31,7 @@ df_post = pd.read_csv(root / "results" / "posterior_samples.csv")
 fig, ax = plt.subplots(1, 2, figsize=(8, 4))
 
 divider = make_axes_locatable(ax[0])
-ax = np.append(ax, divider.append_axes("right", size="100%", pad=0.1))
+ax = np.append(ax, divider.append_axes("right", size="70%", pad=0.1))
 
 colors = ["C0", "C1", "C2", "C5"]
 labels = ["amplitude var.", "phase var.", "occurrence", "accuracy"]
@@ -40,7 +40,7 @@ ax[2].legend(handles=patches, loc=(0, 0.8))
 
 [a.minorticks_off() for a in ax]
 ax[0].set(
-    xlim=(-0.15, 0.23),
+    xlim=(-0.15, 0.3),
     ylim=(0, 19),
     ylabel="Density [a.u.]",
     xlabel="\u03B2-Weight [a.u.]",
@@ -77,7 +77,7 @@ ax[0].plot(x, density(x), color="C1", linestyle="-", linewidth=2)
 ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C1")
 
 density = gaussian_kde(df_post.correlation)
-x = np.linspace(0, 0.22, 200)
+x = np.linspace(-0.05, 0.3, 200)
 y = density(x)
 ax[0].plot(x, density(x), color="C5", linestyle="-", linewidth=2)
 ax[0].vlines(x[np.argmax(y)], ymin=0, ymax=y.max(), linestyle="--", color="C5")
