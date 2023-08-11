@@ -36,7 +36,7 @@ ax = np.append(ax, divider.append_axes("right", size="70%", pad=0.1))
 colors = ["C0", "C1", "C2", "C5"]
 labels = ["amplitude var.", "phase var.", "occurrence", "accuracy"]
 patches = [mpatches.Patch(color=c, label=l) for c, l in zip(colors, labels)]
-ax[2].legend(handles=patches, loc=(0, 0.8))
+ax[2].legend(handles=patches, loc=(0, 0.75))
 
 [a.minorticks_off() for a in ax]
 ax[0].set(
