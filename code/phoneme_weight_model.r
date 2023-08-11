@@ -6,19 +6,21 @@ d <- read.csv(here('results', 'phoneme_weights.csv'))
 
 dat  <- list(
 	     W = standardize(d$weight),
-	     Td = standardize(d$phase_var),
-	     Sd = standardize(d$amplitude_var),
-	     C = standardize(d$count),
-         Sub = d$subject
+	     P = standardize(d$phase_var),
+	     A = standardize(d$amplitude_var),
+	     O = standardize(d$occurrence),
+         S = d$subject,
+         C = standardize(d$correlation)
 )
 
 f <- alist(
 	   W ~ dstudent(1, mu, sigma),
-	   mu <- a[Sub]+bC*C+bT*Td+bS*Sd,
-	   a[Sub] ~ dnorm(0, 0.2),
+	   mu <- a[S]+bP*P+bA*A+bO*O+bC*C,
+	   a[S] ~ dnorm(0, 0.2),
+	   bP ~ dnorm(0, 0.5),
+	   bA ~ dnorm(0, 0.5),
+	   bO ~ dnorm(0, 0.5),
 	   bC ~ dnorm(0, 0.5),
-	   bT ~ dnorm(0, 0.5),
-	   bS ~ dnorm(0, 0.5),
 	   sigma ~ dexp(1)
 )
 
@@ -33,7 +35,7 @@ mu_PI <- apply(mu, 2, PI)
 W_sim <- sim(m, n=1e4)
 W_pi <- apply(W_sim, 2, PI)
 d$weight_sim = mu_mean
-# plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
+plot(mu_mean ~ dat$W, xlab='Observed weight', ylab='Predicted Weight')
 
 d$weight_sim <- mu_mean
 write.csv(d, here('results', 'phoneme_weights_predictions.csv'))
