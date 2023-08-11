@@ -94,6 +94,7 @@ ax[1].scatter(
     facecolors="none",
     edgecolors="C3",
     label="vowels",
+    alpha=0.5,
 )
 ax[1].scatter(
     df_consonants.weight,
@@ -101,6 +102,7 @@ ax[1].scatter(
     facecolors="none",
     edgecolors="C4",
     label="consonants",
+    alpha=0.5,
 )
 
 ax[1].set(
@@ -109,7 +111,7 @@ ax[1].set(
 ax[1].plot([-2, 5], [-2, 5], color="black", linestyle="--")
 ax[1].set_aspect("auto")
 
-
+"""
 u = 2.5  # x-position of the center
 v = 2.5  # y-position of the center
 a = 3.1  # radius on the x-axis
@@ -117,6 +119,7 @@ b = 0.8  # radius on the y-axis
 t = np.linspace(0, 2 * np.pi, 100)
 ax[1].plot(u + a * np.cos(t), v + b * np.sin(t), color="k")
 ax[1].annotate(text="ʌ", xy=(0, 3.3), fontsize=16)
+"""
 ax[1].legend(loc="lower right")
 
 for a, label, x, y in zip(ax[0:2], ["A", "B"], [0, 0], [1.05, 1.05]):
