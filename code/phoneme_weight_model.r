@@ -43,9 +43,10 @@ write.csv(d, here('results', 'phoneme_weights_predictions.csv'))
 post <- extract.samples(m)
 
 d <- data.frame(
-    count=post$bC,
-    amplitude=post$bS,
-    phase=post$bT)
+    occurrence=post$bO,
+    amplitude=post$bA,
+    phase=post$bP,
+    correlation=post$bC)
 
 write.csv(d, here('results', 'posterior_samples.csv'))
 
