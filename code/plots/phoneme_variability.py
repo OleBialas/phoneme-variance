@@ -12,7 +12,7 @@ from adjustText import adjust_text
 
 plt.style.use(["science", "ieee", "no-latex", "high-vis"])
 
-root = Path(__file__).parent.parent.absolute()
+root = Path(__file__).parent.parent.parent.absolute()
 raw = read_raw_brainvision(
     root / "raw" / "sub-001" / "eeg" / "sub-001_task-listening_run-01_eeg.vhdr"
 )
