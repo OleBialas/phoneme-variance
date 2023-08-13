@@ -95,7 +95,6 @@ ax["C"].scatter(  # voiced consonants
     amp_var[is_voiced],
     s=size[is_voiced],
     color="C4",
-    label="voiced",
     alpha=0.7,
 )
 
@@ -106,7 +105,7 @@ ax["C"].scatter(  # voiceless consonants
     s=size[is_voiceless],
     facecolors="none",
     edgecolors="C4",
-    label="voiceless",
+    label="consonants",
     alpha=0.7,
 )
 
