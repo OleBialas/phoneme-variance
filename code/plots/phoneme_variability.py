@@ -25,6 +25,13 @@ mask[channels] = True
 
 ipa_codes = [p["ipa"] for p in phonemes.values()]
 is_vowel = np.asarray([p["manner"] == "vowel" for p in phonemes.values()])
+# divide consonants into voiced and unvoiced
+is_voiced = np.asarray(
+    [p["manner"] != "vowel" and p["voicing"] == "voiced" for p in phonemes.values()]
+)
+is_voiceless = np.asarray(
+    [p["manner"] != "vowel" and p["voicing"] == "voiceless" for p in phonemes.values()]
+)
 
 label_phonemes = ["ʌ", "i", "æ", "ɛ", "oʊ", "ʊ", "t"]
 labels = []
@@ -73,7 +80,7 @@ tmp_var = df.temporal_variance / df.temporal_variance.max()
 amp_var = df.amplitude_variance / df.amplitude_variance.max()
 size = (df["count"] / df["count"].max()) * 30
 
-ax["C"].scatter(
+ax["C"].scatter(  # vowels
     tmp_var[is_vowel],
     amp_var[is_vowel],
     s=size[is_vowel],
@@ -83,13 +90,23 @@ ax["C"].scatter(
     alpha=0.7,
 )
 
-ax["C"].scatter(
-    tmp_var[~is_vowel],
-    amp_var[~is_vowel],
-    s=size[~is_vowel],
+ax["C"].scatter(  # voiced consonants
+    tmp_var[is_voiced],
+    amp_var[is_voiced],
+    s=size[is_voiced],
+    color='C4'
+    label="voiced",
+    alpha=0.7,
+)
+
+
+ax["C"].scatter(  #voiceless consonants
+    tmp_var[is_voiceless],
+    amp_var[is_voiceless],
+    s=size[is_voiceless],
     facecolors="none",
     edgecolors="C4",
-    label="consonants",
+    label="voiceless",
     alpha=0.7,
 )
 
